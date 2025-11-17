@@ -1,6 +1,6 @@
 { lib
 , python3
-, fetchPypi
+, fetchurl
 }:
 
 python3.pkgs.buildPythonPackage rec {
@@ -8,12 +8,8 @@ python3.pkgs.buildPythonPackage rec {
   version = "0.2.11";
   format = "wheel";
 
-  src = fetchPypi {
-    inherit pname version;
-    format = "wheel";
-    python = "py3";
-    abi = "none";
-    platform = "any";
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/py3/c/comfyui_workflow_templates/comfyui_workflow_templates-${version}-py3-none-any.whl";
     hash = "";  # Will be filled after first build attempt
   };
 

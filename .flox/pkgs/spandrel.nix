@@ -1,14 +1,14 @@
 { lib
 , python3
-, fetchPypi
+, fetchurl
 }:
 
 python3.pkgs.buildPythonPackage rec {
   pname = "spandrel";
   version = "0.4.0";
 
-  src = fetchPypi {
-    inherit pname version;
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/source/s/spandrel/spandrel-${version}.tar.gz";
     hash = "";  # Will be filled after first build attempt
   };
 
