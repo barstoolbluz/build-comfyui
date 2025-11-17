@@ -5,8 +5,7 @@
 , comfyui-frontend-package
 , comfyui-workflow-templates
 , comfyui-embedded-docs
-, spandrel-cpu
-, pytorch-python313-cpu-avx512  # barstoolbluz/pytorch-python313-cpu-avx512
+, spandrel
 }:
 
 python3.pkgs.buildPythonApplication rec {
@@ -26,20 +25,13 @@ python3.pkgs.buildPythonApplication rec {
     comfyui-frontend-package
     comfyui-workflow-templates
     comfyui-embedded-docs
-
-    # Custom PyTorch build (CPU-optimized)
-    pytorch-python313-cpu-avx512
-    # NOTE: You'll need to publish these too:
-    # - barstoolbluz/torchvision-python313-cpu-avx512
-    # - barstoolbluz/torchaudio-python313-cpu-avx512
-
-    # Spandrel (CPU variant)
-    spandrel-cpu
+    spandrel
   ] ++ (with python3.pkgs; [
-    # PyTorch ecosystem (using nixpkgs versions for now)
-    # TODO: Replace with barstoolbluz variants when available
-    torchvision
-    torchaudio
+    # PyTorch ecosystem
+    # NOTE: PyTorch itself will be provided via environment composition with barstoolbluz packages
+    # The barstoolbluz/pytorch-python313-cpu-avx512 package should be installed in [install] section
+    torchvision  # TODO: Use barstoolbluz/torchvision-python313-cpu-avx512 when available
+    torchaudio   # TODO: Use barstoolbluz/torchaudio-python313-cpu-avx512 when available
     torchsde
 
     # Scientific computing

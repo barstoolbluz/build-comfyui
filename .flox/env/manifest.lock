@@ -2,9 +2,52 @@
   "lockfile-version": 1,
   "manifest": {
     "version": 1,
+    "install": {
+      "barstoolbluz/pytorch-python313-cpu-avx512": {
+        "pkg-path": "barstoolbluz/pytorch-python313-cpu-avx512",
+        "pkg-group": "barstoolbluz/pytorch-python313-cpu-avx512",
+        "systems": [
+          "x86_64-linux"
+        ]
+      }
+    },
     "hook": {},
     "profile": {},
     "options": {}
   },
-  "packages": []
+  "packages": [
+    {
+      "attr_path": "pytorch-python313-cpu-avx512",
+      "broken": false,
+      "derivation": "/nix/store/ljka0cvq90bqbkjh8cqmj5xzi35bwymb-python3.13-pytorch-python313-cpu-avx512-2.8.0.drv",
+      "description": "PyTorch CPU-only optimized for AVX-512 (general FP32 workloads)",
+      "install_id": "barstoolbluz/pytorch-python313-cpu-avx512",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/barstoolbluz/build-pytorch?rev=a29a2a7c4344e8d86a904f87b5f02eee4880a41d",
+      "name": "python3.13-pytorch-python313-cpu-avx512-2.8.0",
+      "pname": "pytorch-python313-cpu-avx512",
+      "rev": "a29a2a7c4344e8d86a904f87b5f02eee4880a41d",
+      "rev_count": 25,
+      "rev_date": "2025-11-17T19:04:34Z",
+      "scrape_date": "2025-11-17T20:21:14.590462336Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.8.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "cxxdev": "/nix/store/yz5wzf4q21sq3ys7b9affbw5sq2qdack-python3.13-pytorch-python313-cpu-avx512-2.8.0-cxxdev",
+        "dev": "/nix/store/pkypzcpz8zp066af9i5vffsz4jh9kwhh-python3.13-pytorch-python313-cpu-avx512-2.8.0-dev",
+        "dist": "/nix/store/zf00kvqbk4q2byrhf9kq4q1b4h81a15q-python3.13-pytorch-python313-cpu-avx512-2.8.0-dist",
+        "lib": "/nix/store/g3xjrgwimby232fwg24lq0kljw9z75qa-python3.13-pytorch-python313-cpu-avx512-2.8.0-lib",
+        "out": "/nix/store/rsg3wsarws658izqc5g1hvzdlcghqi19-python3.13-pytorch-python313-cpu-avx512-2.8.0"
+      },
+      "system": "x86_64-linux",
+      "group": "barstoolbluz/pytorch-python313-cpu-avx512",
+      "priority": 5
+    }
+  ]
 }

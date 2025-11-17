@@ -15,6 +15,9 @@ version = 1
 ##  $ flox show gum     <- show all versions of a package
 ## -------------------------------------------------------------------
 [install]
+"barstoolbluz/pytorch-python313-cpu-avx512".pkg-path = "barstoolbluz/pytorch-python313-cpu-avx512"
+"barstoolbluz/pytorch-python313-cpu-avx512".systems = ["x86_64-linux"]
+"barstoolbluz/pytorch-python313-cpu-avx512".pkg-group = "barstoolbluz/pytorch-python313-cpu-avx512"
 # gum.pkg-path = "gum"
 # gum.version = "^0.14.5"
 
