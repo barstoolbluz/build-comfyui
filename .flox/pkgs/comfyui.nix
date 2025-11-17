@@ -59,6 +59,9 @@ python3.pkgs.buildPythonApplication rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
+  # Skip build phase - ComfyUI runs from source
+  dontBuild = true;
+
   # Don't run tests for now
   doCheck = false;
 
