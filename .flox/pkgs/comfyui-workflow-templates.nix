@@ -1,9 +1,9 @@
 { lib
-, buildPythonPackage
+, python3
 , fetchPypi
 }:
 
-buildPythonPackage rec {
+python3.pkgs.buildPythonPackage rec {
   pname = "comfyui-workflow-templates";
   version = "0.2.11";
   format = "wheel";

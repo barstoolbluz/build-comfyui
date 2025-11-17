@@ -1,9 +1,9 @@
 { lib
-, buildPythonPackage
+, python3
 , fetchPypi
 }:
 
-buildPythonPackage rec {
+python3.pkgs.buildPythonPackage rec {
   pname = "comfyui-embedded-docs";
   version = "0.3.1";
   format = "wheel";

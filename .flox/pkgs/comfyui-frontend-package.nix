@@ -1,9 +1,9 @@
 { lib
-, buildPythonPackage
+, python3
 , fetchPypi
 }:
 
-buildPythonPackage rec {
+python3.pkgs.buildPythonPackage rec {
   pname = "comfyui-frontend-package";
   version = "1.28.8";
   format = "wheel";

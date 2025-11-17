@@ -1,13 +1,9 @@
 { lib
-, buildPythonPackage
+, python3
 , fetchPypi
-, torch
-, numpy
-, pillow
-, safetensors
 }:
 
-buildPythonPackage rec {
+python3.pkgs.buildPythonPackage rec {
   pname = "spandrel";
   version = "0.4.0";
 
@@ -16,7 +12,7 @@ buildPythonPackage rec {
     hash = "";  # Will be filled after first build attempt
   };
 
-  propagatedBuildInputs = [
+  propagatedBuildInputs = with python3.pkgs; [
     torch
     numpy
     pillow
