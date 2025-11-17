@@ -2,6 +2,10 @@
 , python3
 , fetchFromGitHub
 , makeWrapper
+, comfyui-frontend-package
+, comfyui-workflow-templates
+, comfyui-embedded-docs
+, spandrel
 }:
 
 python3.pkgs.buildPythonApplication rec {
@@ -16,7 +20,13 @@ python3.pkgs.buildPythonApplication rec {
     hash = "sha256-aSkRaNBBLIVNab7GgGHwiRqc7YoZi73igxCURUHEVLM=";
   };
 
-  propagatedBuildInputs = with python3.pkgs; [
+  propagatedBuildInputs = [
+    # ComfyUI-specific packages
+    comfyui-frontend-package
+    comfyui-workflow-templates
+    comfyui-embedded-docs
+    spandrel
+  ] ++ (with python3.pkgs; [
     # Core PyTorch stack
     torch
     torchvision
@@ -55,7 +65,7 @@ python3.pkgs.buildPythonApplication rec {
     # Utilities
     tqdm
     psutil
-  ];
+  ]);
 
   nativeBuildInputs = [ makeWrapper ];
 
