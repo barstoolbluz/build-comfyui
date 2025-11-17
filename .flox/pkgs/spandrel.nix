@@ -6,11 +6,16 @@
 python3.pkgs.buildPythonPackage rec {
   pname = "spandrel";
   version = "0.4.0";
+  pyproject = true;
 
   src = fetchurl {
     url = "https://files.pythonhosted.org/packages/source/s/spandrel/spandrel-${version}.tar.gz";
-    hash = "";  # Will be filled after first build attempt
+    hash = "sha256-9FUmiT+SOhLvN1QsROREsSCJdlk7x8zfpU/QTHw+gMo=";
   };
+
+  build-system = with python3.pkgs; [
+    setuptools
+  ];
 
   propagatedBuildInputs = with python3.pkgs; [
     torch

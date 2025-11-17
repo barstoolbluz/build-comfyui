@@ -10,7 +10,7 @@ python3.pkgs.buildPythonPackage rec {
 
   src = fetchurl {
     url = "https://files.pythonhosted.org/packages/py3/c/comfyui_embedded_docs/comfyui_embedded_docs-${version}-py3-none-any.whl";
-    hash = "";  # Will be filled after first build attempt
+    hash = "sha256-+7sO+Z6r2Hh8Zl7+I1ZlsztivV+bxNlA6yBV02g0yRw=";
   };
 
   propagatedBuildInputs = [ ];

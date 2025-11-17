@@ -10,7 +10,7 @@ python3.pkgs.buildPythonPackage rec {
 
   src = fetchurl {
     url = "https://files.pythonhosted.org/packages/py3/c/comfyui_workflow_templates/comfyui_workflow_templates-${version}-py3-none-any.whl";
-    hash = "";  # Will be filled after first build attempt
+    hash = "sha256-gPOJUxO3/NpLZiPZCt5Yt+V3V0WG+fYTmdUTt/PpvMs=";
   };
 
   propagatedBuildInputs = [ ];

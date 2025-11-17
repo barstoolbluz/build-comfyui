@@ -10,7 +10,7 @@ python3.pkgs.buildPythonPackage rec {
 
   src = fetchurl {
     url = "https://files.pythonhosted.org/packages/py3/c/comfyui_frontend_package/comfyui_frontend_package-${version}-py3-none-any.whl";
-    hash = "";  # Will be filled after first build attempt
+    hash = "sha256-vnbb+arbg2tnLmkWFFYpTWXzIE8VYuwfeK4SxpNHqOA=";
   };
 
   # No dependencies - this is a frontend package
