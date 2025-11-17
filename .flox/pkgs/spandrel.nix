@@ -19,7 +19,9 @@ python3.pkgs.buildPythonPackage rec {
 
   propagatedBuildInputs = with python3.pkgs; [
     torch
+    torchvision
     numpy
+    einops
     pillow
     safetensors
   ];
