@@ -111,10 +111,12 @@ python3.pkgs.buildPythonApplication rec {
 
     # Install documentation
     cp ${./SD35-GUIDE.md} $out/share/doc/comfyui/SD35-GUIDE.md
+    cp ${./SD35-IMG2IMG-GUIDE.md} $out/share/doc/comfyui/SD35-IMG2IMG-GUIDE.md
     cp ${./README.md} $out/share/doc/comfyui/README.md
 
     # Install example workflows
     cp ${./workflow-sd35-example.json} $out/share/workflows/sd35-example.json
+    cp ${./workflow-sd35-img2img.json} $out/share/workflows/sd35-img2img.json
 
     # Create extra_model_paths.yaml template
     cat > $out/share/comfyui-tools/extra_model_paths.yaml.template <<'TEMPLATE'
