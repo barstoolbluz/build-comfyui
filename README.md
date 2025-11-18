@@ -286,18 +286,30 @@ comfyui \
 
 ## Known Limitations
 
-### Missing barstoolbluz Packages
+### barstoolbluz Package Status
 
-The CPU and CUDA variants currently use **nixpkgs versions** for:
-- `torchvision`
-- `torchaudio`
-- `torchsde`
+#### ✅ Available Now (CUDA)
+For full CUDA optimization, install these alongside `comfyui-cuda`:
+- ✅ `barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512`
+- ✅ `barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512`
+- ✅ `barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512`
 
-For full optimization, these should be replaced with barstoolbluz variants:
-- `barstoolbluz/torchvision-python313-cpu-avx512`
-- `barstoolbluz/torchaudio-python313-cpu-avx512`
-- `barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512`
-- `barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512`
+Example:
+```bash
+flox install barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512
+flox install barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512
+flox install barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512
+```
+
+#### ⏳ Pending (CPU)
+For full CPU optimization, these packages are still pending:
+- ✅ `barstoolbluz/pytorch-python313-cpu-avx512` (available)
+- ⏳ `barstoolbluz/torchvision-python313-cpu-avx512` (pending)
+- ⏳ `barstoolbluz/torchaudio-python313-cpu-avx512` (pending)
+
+Until CPU variants are available, `comfyui-cpu` uses nixpkgs torchvision/torchaudio.
+
+**Note**: `torchsde` continues to use nixpkgs version for all variants.
 
 ### Platform Support
 

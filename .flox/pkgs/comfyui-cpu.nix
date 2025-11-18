@@ -28,10 +28,13 @@ python3.pkgs.buildPythonApplication rec {
     spandrel
   ] ++ (with python3.pkgs; [
     # PyTorch ecosystem
-    # NOTE: PyTorch itself will be provided via environment composition with barstoolbluz packages
-    # The barstoolbluz/pytorch-python313-cpu-avx512 package should be installed in [install] section
-    torchvision  # TODO: Use barstoolbluz/torchvision-python313-cpu-avx512 when available
-    torchaudio   # TODO: Use barstoolbluz/torchaudio-python313-cpu-avx512 when available
+    # NOTE: For full CPU optimization, install these barstoolbluz packages in [install] section:
+    #   - barstoolbluz/pytorch-python313-cpu-avx512
+    #   - barstoolbluz/torchvision-python313-cpu-avx512 (when available)
+    #   - barstoolbluz/torchaudio-python313-cpu-avx512 (when available)
+    # They will override the nixpkgs versions below at runtime via environment composition.
+    torchvision  # Will be overridden by barstoolbluz/torchvision-python313-cpu-avx512 when available
+    torchaudio   # Will be overridden by barstoolbluz/torchaudio-python313-cpu-avx512 when available
     torchsde
 
     # Scientific computing

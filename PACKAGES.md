@@ -160,17 +160,24 @@ barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512
 - NVIDIA GPU drivers (CUDA 12.8 compatible)
 - CUDA runtime libraries
 
-### Pending barstoolbluz Packages
-
-These would complete the optimized stack (currently using nixpkgs):
+### barstoolbluz Package Availability
 
 #### CPU Ecosystem
-- [ ] `barstoolbluz/torchvision-python313-cpu-avx512`
-- [ ] `barstoolbluz/torchaudio-python313-cpu-avx512`
+- [x] `barstoolbluz/pytorch-python313-cpu-avx512` ✅ Available
+- [ ] `barstoolbluz/torchvision-python313-cpu-avx512` ⏳ Pending
+- [ ] `barstoolbluz/torchaudio-python313-cpu-avx512` ⏳ Pending
 
-#### CUDA Ecosystem
-- [ ] `barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512`
-- [ ] `barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512`
+#### CUDA Ecosystem (Complete Stack Available!)
+- [x] `barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512` ✅ Available
+- [x] `barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512` ✅ Available
+- [x] `barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512` ✅ Available
+
+**Usage**: Install these packages alongside `comfyui-cuda` for full optimization:
+```bash
+flox install barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512
+flox install barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512
+flox install barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512
+```
 
 ## Build Order
 

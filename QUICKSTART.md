@@ -14,8 +14,10 @@ flox build comfyui
 flox install barstoolbluz/pytorch-python313-cpu-avx512
 flox build comfyui-cpu
 
-# Or build CUDA-optimized variant
+# Or build CUDA-optimized variant (full stack available!)
 flox install barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512
+flox install barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512
+flox install barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512
 flox build comfyui-cuda
 ```
 
