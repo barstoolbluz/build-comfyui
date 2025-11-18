@@ -75,6 +75,9 @@ python3.pkgs.buildPythonApplication rec {
   # Don't run tests for now
   doCheck = false;
 
+  # Disable automatic Python wrapping - we'll do it ourselves
+  dontWrapPythonPrograms = true;
+
   installPhase = ''
     runHook preInstall
 
@@ -85,12 +88,17 @@ python3.pkgs.buildPythonApplication rec {
     # Copy all ComfyUI files to share directory
     cp -r . $out/share/comfyui/
 
+    # Build a Python environment with all dependencies
+    pythonEnv="${python3.withPackages (ps: propagatedBuildInputs)}"
+
     # Create wrapper script using makeWrapper
-    # Use --suffix to add ComfyUI after environment PYTHONPATH
-    # This allows environment packages to override built packages if needed
+    # Use --suffix for dependencies so environment packages
+    # have priority over built packages
+    # This enables environment composition pattern from FLOX.md §12
     makeWrapper ${python3}/bin/python3 $out/bin/comfyui \
       --add-flags "$out/share/comfyui/main.py" \
-      --suffix PYTHONPATH : "$out/share/comfyui"
+      --suffix PYTHONPATH : "$out/share/comfyui" \
+      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}"
 
     runHook postInstall
   '';
