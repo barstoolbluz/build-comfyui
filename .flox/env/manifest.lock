@@ -33,6 +33,39 @@
   },
   "packages": [
     {
+      "attr_path": "pytorch-python313-cuda12_8-sm120-avx512",
+      "broken": false,
+      "derivation": "/nix/store/6hr0irdflzlg82h6l4ash8rd761czmyq-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0.drv",
+      "description": "PyTorch optimized for NVIDIA RTX 5090 (SM120) with AVX-512 CPU instructions",
+      "install_id": "barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/barstoolbluz/build-pytorch?rev=feae976f7571708b523bd82d9a946d846b8d3fec",
+      "name": "python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0",
+      "pname": "pytorch-python313-cuda12_8-sm120-avx512",
+      "rev": "feae976f7571708b523bd82d9a946d846b8d3fec",
+      "rev_count": 16,
+      "rev_date": "2025-11-16T20:31:43Z",
+      "scrape_date": "2025-11-18T01:10:00.098340411Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.8.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "cxxdev": "/nix/store/kzvphj5f66mabzjnf5842nihd7ams9a7-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-cxxdev",
+        "dev": "/nix/store/5xjg821gzn60gix6j3yrws5027h982qr-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-dev",
+        "dist": "/nix/store/pihi3x8bchifd4w2qmzma5gkr3k07nr8-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-dist",
+        "lib": "/nix/store/9x4vqifzi819ngdqn4azbww16nkiwib3-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-lib",
+        "out": "/nix/store/72adwf32j36qmghmfms2vdkyls6w1wlm-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0"
+      },
+      "system": "x86_64-linux",
+      "group": "barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512",
+      "priority": 5
+    },
+    {
       "attr_path": "torchaudio-python313-cuda12_8-sm120-avx512",
       "broken": false,
       "derivation": "/nix/store/2fqfil8a6mn1q9vndmg1j2qjqhs4n17j-python3.13-torchaudio-python313-cuda12_8-sm120-avx512-2.8.0.drv",
@@ -95,39 +128,6 @@
       "system": "x86_64-linux",
       "group": "barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512",
       "priority": 6
-    },
-    {
-      "attr_path": "pytorch-python313-cuda12_8-sm120-avx512",
-      "broken": false,
-      "derivation": "/nix/store/6hr0irdflzlg82h6l4ash8rd761czmyq-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0.drv",
-      "description": "PyTorch optimized for NVIDIA RTX 5090 (SM120) with AVX-512 CPU instructions",
-      "install_id": "barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512",
-      "license": "BSD-3-Clause",
-      "locked_url": "https://github.com/barstoolbluz/build-pytorch?rev=feae976f7571708b523bd82d9a946d846b8d3fec",
-      "name": "python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0",
-      "pname": "pytorch-python313-cuda12_8-sm120-avx512",
-      "rev": "feae976f7571708b523bd82d9a946d846b8d3fec",
-      "rev_count": 16,
-      "rev_date": "2025-11-16T20:31:43Z",
-      "scrape_date": "2025-11-18T01:10:00.098340411Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "2.8.0",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "cxxdev": "/nix/store/kzvphj5f66mabzjnf5842nihd7ams9a7-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-cxxdev",
-        "dev": "/nix/store/5xjg821gzn60gix6j3yrws5027h982qr-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-dev",
-        "dist": "/nix/store/pihi3x8bchifd4w2qmzma5gkr3k07nr8-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-dist",
-        "lib": "/nix/store/9x4vqifzi819ngdqn4azbww16nkiwib3-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0-lib",
-        "out": "/nix/store/72adwf32j36qmghmfms2vdkyls6w1wlm-python3.13-pytorch-python313-cuda12_8-sm120-avx512-2.8.0"
-      },
-      "system": "x86_64-linux",
-      "group": "barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512",
-      "priority": 5
     }
   ]
 }
