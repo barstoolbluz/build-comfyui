@@ -69,6 +69,7 @@ python3.pkgs.buildPythonApplication rec {
     # Utilities
     tqdm
     psutil
+    huggingface-hub  # For model download tools
   ]);
 
   nativeBuildInputs = [ makeWrapper ];
@@ -87,6 +88,9 @@ python3.pkgs.buildPythonApplication rec {
 
     # Create directory structure
     mkdir -p $out/share/comfyui
+    mkdir -p $out/share/comfyui-tools
+    mkdir -p $out/share/doc/comfyui
+    mkdir -p $out/share/workflows
     mkdir -p $out/bin
 
     # Copy all ComfyUI files to share directory
@@ -94,6 +98,40 @@ python3.pkgs.buildPythonApplication rec {
 
     # Build a Python environment with all dependencies
     pythonEnv="${python3.withPackages (ps: propagatedBuildInputs)}"
+
+    # Install model download tools
+    cp ${./download-sd15.py} $out/share/comfyui-tools/download-sd15.py
+    cp ${./download-sdxl.py} $out/share/comfyui-tools/download-sdxl.py
+    cp ${./download-sd35.py} $out/share/comfyui-tools/download-sd35.py
+    chmod +x $out/share/comfyui-tools/*.py
+
+    # Install comfyui-download CLI tool
+    cp ${./comfyui-download} $out/bin/comfyui-download
+    chmod +x $out/bin/comfyui-download
+
+    # Install documentation
+    cp ${./SD35-GUIDE.md} $out/share/doc/comfyui/SD35-GUIDE.md
+    cp ${./README.md} $out/share/doc/comfyui/README.md
+
+    # Install example workflows
+    cp ${./workflow-sd35-example.json} $out/share/workflows/sd35-example.json
+
+    # Create extra_model_paths.yaml template
+    cat > $out/share/comfyui-tools/extra_model_paths.yaml.template <<'TEMPLATE'
+# ComfyUI Extra Model Paths Configuration
+# Copy this to ~/comfyui-work/extra_model_paths.yaml and adjust paths
+comfyui:
+  base_path: ~/comfyui-work/
+  is_default: true
+  checkpoints: models/checkpoints/
+  clip: models/clip/
+  text_encoders: models/clip/
+  vae: models/vae/
+  loras: models/loras/
+  upscale_models: models/upscale_models/
+  embeddings: models/embeddings/
+  controlnet: models/controlnet/
+TEMPLATE
 
     # Create wrapper script using makeWrapper
     # Use --suffix for dependencies so environment packages (barstoolbluz PyTorch)

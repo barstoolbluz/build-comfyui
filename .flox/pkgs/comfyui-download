@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ComfyUI Model Downloader
+# Helper script to download popular Stable Diffusion models
+
+# Determine script location (works both in dev and installed)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Check if we're installed (look for share dir relative to bin)
+if [ -d "$SCRIPT_DIR/../share/comfyui-tools" ]; then
+    TOOLS_DIR="$SCRIPT_DIR/../share/comfyui-tools"
+else
+    # Development mode - scripts are in same directory
+    TOOLS_DIR="$SCRIPT_DIR"
+fi
+
+show_usage() {
+    cat <<EOF
+ComfyUI Model Downloader
+
+Usage: comfyui-download <model>
+
+Available models:
+  sd15   - Stable Diffusion 1.5 (4.3GB) - Fast, 512x512
+  sdxl   - Stable Diffusion XL (6.9GB) - High quality, 1024x1024
+  sd35   - Stable Diffusion 3.5 Large (27GB) - Highest quality, requires TripleCLIPLoader
+
+Environment variables:
+  HF_TOKEN - HuggingFace token (required for some models)
+
+Examples:
+  comfyui-download sd15
+  HF_TOKEN=hf_xxx comfyui-download sd35
+
+EOF
+}
+
+if [ $# -eq 0 ]; then
+    show_usage
+    exit 1
+fi
+
+MODEL="$1"
+
+case "$MODEL" in
+    sd15)
+        echo "Downloading Stable Diffusion 1.5..."
+        python3 "$TOOLS_DIR/download-sd15.py"
+        ;;
+    sdxl)
+        echo "Downloading Stable Diffusion XL..."
+        python3 "$TOOLS_DIR/download-sdxl.py"
+        ;;
+    sd35)
+        echo "Downloading Stable Diffusion 3.5 Large..."
+        if [ -z "${HF_TOKEN:-}" ]; then
+            echo "⚠️  WARNING: HF_TOKEN not set. You may need to set it if download fails."
+            echo "   Example: HF_TOKEN=hf_xxx comfyui-download sd35"
+            echo ""
+        fi
+        python3 "$TOOLS_DIR/download-sd35.py"
+        ;;
+    *)
+        echo "❌ Unknown model: $MODEL"
+        echo ""
+        show_usage
+        exit 1
+        ;;
+esac
