@@ -89,10 +89,25 @@ python3.pkgs.buildPythonApplication rec {
     # Copy all ComfyUI files to share directory
     cp -r . $out/share/comfyui/
 
-    # Create wrapper script for main executable
-    makeWrapper ${python3}/bin/python3 $out/bin/comfyui-cpu \
-      --add-flags "$out/share/comfyui/main.py" \
-      --prefix PYTHONPATH : "$out/share/comfyui:$PYTHONPATH"
+    # Create wrapper script that uses environment Python
+    # This allows barstoolbluz PyTorch to override nixpkgs version at runtime
+    cat > $out/bin/comfyui-cpu << 'WRAPPER_EOF'
+#!/usr/bin/env bash
+# Wrapper for ComfyUI CPU variant
+# Uses Python from PATH to allow runtime PyTorch override via Flox composition
+
+SCRIPT_DIR="$(cd "$(dirname "''${BASH_SOURCE[0]}")" && pwd)"
+COMFYUI_DIR="$SCRIPT_DIR/../share/comfyui"
+
+# Add ComfyUI to PYTHONPATH so imports work
+export PYTHONPATH="$COMFYUI_DIR:''${PYTHONPATH:-}"
+
+# Use Python from environment (not hardcoded build-time Python)
+# This allows barstoolbluz PyTorch to take precedence
+exec python3 "$COMFYUI_DIR/main.py" "$@"
+WRAPPER_EOF
+
+    chmod +x $out/bin/comfyui-cpu
 
     runHook postInstall
   '';

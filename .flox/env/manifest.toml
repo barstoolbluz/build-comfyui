@@ -15,9 +15,17 @@ version = 1
 ##  $ flox show gum     <- show all versions of a package
 ## -------------------------------------------------------------------
 [install]
-"barstoolbluz/pytorch-python313-cpu-avx512".pkg-path = "barstoolbluz/pytorch-python313-cpu-avx512"
-"barstoolbluz/pytorch-python313-cpu-avx512".systems = ["x86_64-linux"]
-"barstoolbluz/pytorch-python313-cpu-avx512".pkg-group = "barstoolbluz/pytorch-python313-cpu-avx512"
+"barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512".pkg-path = "barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512"
+"barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512".systems = ["x86_64-linux"]
+"barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512".priority = 6
+"barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512".pkg-group = "barstoolbluz/torchvision-python313-cuda12_8-sm120-avx512"
+"barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512".pkg-path = "barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512"
+"barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512".systems = ["x86_64-linux"]
+"barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512".priority = 7
+"barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512".pkg-group = "barstoolbluz/torchaudio-python313-cuda12_8-sm120-avx512"
+"barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512".pkg-path = "barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512"
+"barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512".systems = ["x86_64-linux"]
+"barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512".pkg-group = "barstoolbluz/pytorch-python313-cuda12_8-sm120-avx512"
 # gum.pkg-path = "gum"
 # gum.version = "^0.14.5"
 
