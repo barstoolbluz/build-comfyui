@@ -100,23 +100,24 @@ python3.pkgs.buildPythonApplication rec {
     pythonEnv="${python3.withPackages (ps: propagatedBuildInputs)}"
 
     # Install model download tools
-    cp ${./download-sd15.py} $out/share/comfyui-tools/download-sd15.py
-    cp ${./download-sdxl.py} $out/share/comfyui-tools/download-sdxl.py
-    cp ${./download-sd35.py} $out/share/comfyui-tools/download-sd35.py
+    cp ${../assets/download-sd15.py} $out/share/comfyui-tools/download-sd15.py
+    cp ${../assets/download-sdxl.py} $out/share/comfyui-tools/download-sdxl.py
+    cp ${../assets/download-sd35.py} $out/share/comfyui-tools/download-sd35.py
     chmod +x $out/share/comfyui-tools/*.py
 
     # Install comfyui-download CLI tool
-    cp ${./comfyui-download} $out/bin/comfyui-download
+    cp ${../assets/comfyui-download} $out/bin/comfyui-download
     chmod +x $out/bin/comfyui-download
 
     # Install documentation
-    cp ${./SD35-GUIDE.md} $out/share/doc/comfyui/SD35-GUIDE.md
-    cp ${./SD35-IMG2IMG-GUIDE.md} $out/share/doc/comfyui/SD35-IMG2IMG-GUIDE.md
-    cp ${./README.md} $out/share/doc/comfyui/README.md
+    cp ${../assets/SD35-GUIDE.md} $out/share/doc/comfyui/SD35-GUIDE.md
+    cp ${../assets/SD35-IMG2IMG-GUIDE.md} $out/share/doc/comfyui/SD35-IMG2IMG-GUIDE.md
+    cp ${../assets/README.md} $out/share/doc/comfyui/README.md
 
-    # Install example workflows
-    cp ${./workflow-sd35-txt2img.json} $out/share/workflows/sd35-txt2img.json
-    cp ${./workflow-sd35-img2img.json} $out/share/workflows/sd35-img2img.json
+    # Install example workflows and sample image
+    cp ${../assets/workflow-sd35-txt2img.json} $out/share/workflows/sd35-txt2img.json
+    cp ${../assets/workflow-sd35-img2img.json} $out/share/workflows/sd35-img2img.json
+    cp ${../assets/hank-mobley.png} $out/share/workflows/hank-mobley.png
 
     # Create extra_model_paths.yaml template
     cat > $out/share/comfyui-tools/extra_model_paths.yaml.template <<'TEMPLATE'
@@ -148,7 +149,7 @@ TEMPLATE
   '';
 
   meta = with lib; {
-    description = "ComfyUI with CUDA 12.8 optimized PyTorch (SM 12.0, AVX512)";
+    description = "ComfyUI with CUDA 12.8 optimized PyTorch for NVIDIA RTX 50-series (SM 12.0, AVX512)";
     homepage = "https://github.com/comfyanonymous/ComfyUI";
     license = licenses.gpl3Only;
     platforms = [ "x86_64-linux" ];  # CUDA is Linux-only

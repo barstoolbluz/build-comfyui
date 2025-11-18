@@ -398,9 +398,9 @@
         "Node name for S&R": "CLIPTextEncodeSD3"
       },
       "widgets_values": [
-        "beautiful scenery nature glass bottle landscape, purple galaxy bottle",
-        "beautiful scenery nature glass bottle landscape, purple galaxy bottle",
-        "beautiful scenery nature glass bottle landscape, purple galaxy bottle",
+        "the sweet jazz man's bad ass song",
+        "the sweet jazz man's bad ass song",
+        "the sweet jazz man's bad ass song",
         "none"
       ]
     },
@@ -538,7 +538,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "example.png",
+        "hank-mobley.png",
         "image"
       ]
     },
