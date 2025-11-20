@@ -162,6 +162,27 @@ comfyui:
   controlnet: models/controlnet/
 CONFIG
 
+    # Create activation hook script for runtime environment
+    mkdir -p $out/etc/profile.d
+    cat > $out/etc/profile.d/comfyui-setup.sh <<'HOOK'
+#!/bin/bash
+# ComfyUI activation hook - runs when environment is activated
+
+# Create ComfyUI working directory structure
+mkdir -p "$HOME/comfyui-work"/{models/{checkpoints,clip,unet,vae,loras,upscale_models,embeddings,controlnet},output,input,temp}
+
+# Copy extra_model_paths.yaml from package if it doesn't exist (idempotent)
+if [ ! -f "$HOME/comfyui-work/extra_model_paths.yaml" ]; then
+  if [ -f "$FLOX_ENV/share/comfyui/extra_model_paths.yaml" ]; then
+    cp "$FLOX_ENV/share/comfyui/extra_model_paths.yaml" "$HOME/comfyui-work/extra_model_paths.yaml"
+    # Replace ~/ with actual home directory path
+    sed -i "s|~/|$HOME/|g" "$HOME/comfyui-work/extra_model_paths.yaml"
+    echo "✅ ComfyUI: Copied extra_model_paths.yaml to $HOME/comfyui-work/"
+  fi
+fi
+HOOK
+    chmod +x $out/etc/profile.d/comfyui-setup.sh
+
     # Create wrapper script using makeWrapper
     # Use --suffix for dependencies so environment packages (barstoolbluz PyTorch)
     # have priority over built packages (nixpkgs PyTorch)
