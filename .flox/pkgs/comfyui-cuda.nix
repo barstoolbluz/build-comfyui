@@ -128,7 +128,7 @@ python3.pkgs.buildPythonApplication rec {
     cp ${../../assets/workflow-sd35-img2img.json} $out/share/workflows/sd35-img2img.json
     cp ${../../assets/hank-mobley.png} $out/share/workflows/hank-mobley.png
 
-    # Create extra_model_paths.yaml template
+    # Create extra_model_paths.yaml template (in tools dir)
     cat > $out/share/comfyui-tools/extra_model_paths.yaml.template <<'TEMPLATE'
 # ComfyUI Extra Model Paths Configuration
 # Copy this to ~/comfyui-work/extra_model_paths.yaml and adjust paths
@@ -144,6 +144,23 @@ comfyui:
   embeddings: models/embeddings/
   controlnet: models/controlnet/
 TEMPLATE
+
+    # Create actual extra_model_paths.yaml in comfyui dir for activation hook
+    cat > $out/share/comfyui/extra_model_paths.yaml <<'CONFIG'
+# ComfyUI Extra Model Paths Configuration
+comfyui:
+  base_path: ~/comfyui-work/
+  is_default: true
+  checkpoints: models/checkpoints/
+  clip: models/clip/
+  text_encoders: models/clip/
+  unet: models/unet/
+  vae: models/vae/
+  loras: models/loras/
+  upscale_models: models/upscale_models/
+  embeddings: models/embeddings/
+  controlnet: models/controlnet/
+CONFIG
 
     # Create wrapper script using makeWrapper
     # Use --suffix for dependencies so environment packages (barstoolbluz PyTorch)

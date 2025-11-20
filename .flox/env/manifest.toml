@@ -46,26 +46,17 @@ on-activate = '''
   # Create ComfyUI working directory and subdirectories
   mkdir -p "$HOME/comfyui-work"/{models/{checkpoints,clip,unet,vae,loras,upscale_models,embeddings,controlnet},output,input,temp}
 
-  # Create extra_model_paths.yaml if it doesn't exist
+  # Copy extra_model_paths.yaml from package if it doesn't exist
   if [ ! -f "$HOME/comfyui-work/extra_model_paths.yaml" ]; then
-    cat > "$HOME/comfyui-work/extra_model_paths.yaml" <<'EOF'
-# ComfyUI Extra Model Paths Configuration
-comfyui:
-  base_path: $HOME/comfyui-work/
-  is_default: true
-  checkpoints: models/checkpoints/
-  clip: models/clip/
-  text_encoders: models/clip/
-  unet: models/unet/
-  vae: models/vae/
-  loras: models/loras/
-  upscale_models: models/upscale_models/
-  embeddings: models/embeddings/
-  controlnet: models/controlnet/
-EOF
-    # Replace $HOME with actual home directory path
-    sed -i "s|\$HOME|$HOME|g" "$HOME/comfyui-work/extra_model_paths.yaml"
-    echo "✅ Created extra_model_paths.yaml at $HOME/comfyui-work/"
+    # Try to find the config in the ComfyUI package
+    if [ -f "$FLOX_ENV/share/comfyui/extra_model_paths.yaml" ]; then
+      cp "$FLOX_ENV/share/comfyui/extra_model_paths.yaml" "$HOME/comfyui-work/extra_model_paths.yaml"
+      # Replace ~/ with actual home directory path
+      sed -i "s|~/|$HOME/|g" "$HOME/comfyui-work/extra_model_paths.yaml"
+      echo "✅ Copied extra_model_paths.yaml to $HOME/comfyui-work/"
+    else
+      echo "⚠️  Could not find extra_model_paths.yaml in package"
+    fi
   fi
 '''
 
