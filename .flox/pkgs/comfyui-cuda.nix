@@ -74,6 +74,15 @@ python3.pkgs.buildPythonApplication rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
+  # Patch main.py to not look for extra_model_paths.yaml in its own directory
+  # This prevents it from trying to load from the read-only Nix store
+  postPatch = ''
+    # Comment out the lines that try to load extra_model_paths.yaml from script directory
+    sed -i 's/^\(\s*\)extra_model_paths_config_path = /\1# extra_model_paths_config_path = /' main.py
+    sed -i 's/^\(\s*\)if os.path.isfile(extra_model_paths_config_path):/\1# if os.path.isfile(extra_model_paths_config_path):/' main.py
+    sed -i 's/^\(\s*\)utils.extra_config.load_extra_path_config(extra_model_paths_config_path)/\1# utils.extra_config.load_extra_path_config(extra_model_paths_config_path)/' main.py
+  '';
+
   # Skip build phase - ComfyUI runs from source
   dontBuild = true;
 
