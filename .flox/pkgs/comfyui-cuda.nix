@@ -142,6 +142,7 @@ TEMPLATE
     # This enables environment composition pattern from FLOX.md §12
     makeWrapper ${python3}/bin/python3 $out/bin/comfyui-cuda \
       --add-flags "$out/share/comfyui/main.py" \
+      --add-flags "--extra-model-paths-config \$HOME/comfyui-work/extra_model_paths.yaml" \
       --suffix PYTHONPATH : "$out/share/comfyui" \
       --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}"
 
