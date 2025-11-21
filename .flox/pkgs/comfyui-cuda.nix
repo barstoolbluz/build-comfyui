@@ -74,13 +74,16 @@ python3.pkgs.buildPythonApplication rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
-  # Patch main.py to not look for extra_model_paths.yaml in its own directory
-  # This prevents it from trying to load from the read-only Nix store
+  # Patch main.py to fix --user-directory custom nodes loading
   postPatch = ''
     # Comment out the lines that try to load extra_model_paths.yaml from script directory
     sed -i 's/^\(\s*\)extra_model_paths_config_path = /\1# extra_model_paths_config_path = /' main.py
     sed -i 's/^\(\s*\)if os.path.isfile(extra_model_paths_config_path):/\1# if os.path.isfile(extra_model_paths_config_path):/' main.py
     sed -i 's/^\(\s*\)utils.extra_config.load_extra_path_config(extra_model_paths_config_path)/\1# utils.extra_config.load_extra_path_config(extra_model_paths_config_path)/' main.py
+
+    # Fix bug: --user-directory doesn't add custom_nodes path
+    # After set_user_directory() is called, we need to add $USER_DIRECTORY/custom_nodes to the search paths
+    sed -i '/folder_paths.set_user_directory(user_dir)/a\        custom_nodes_path = os.path.join(user_dir, "custom_nodes")\n        if os.path.isdir(custom_nodes_path):\n            folder_paths.add_model_folder_path("custom_nodes", custom_nodes_path)' main.py
   '';
 
   # Skip build phase - ComfyUI runs from source
@@ -128,25 +131,8 @@ python3.pkgs.buildPythonApplication rec {
     cp ${../../assets/workflow-sd35-img2img.json} $out/share/workflows/sd35-img2img.json
     cp ${../../assets/hank-mobley.png} $out/share/workflows/hank-mobley.png
 
-    # Create extra_model_paths.yaml template (in tools dir)
-    cat > $out/share/comfyui-tools/extra_model_paths.yaml.template <<'TEMPLATE'
-# ComfyUI Extra Model Paths Configuration
-# Copy this to ~/comfyui-work/extra_model_paths.yaml and adjust paths
-comfyui:
-  base_path: ~/comfyui-work/
-  is_default: true
-  checkpoints: models/checkpoints/
-  clip: models/clip/
-  text_encoders: models/clip/
-  vae: models/vae/
-  loras: models/loras/
-  upscale_models: models/upscale_models/
-  embeddings: models/embeddings/
-  controlnet: models/controlnet/
-TEMPLATE
-
-    # Create actual extra_model_paths.yaml in comfyui dir for activation hook
-    cat > $out/share/comfyui/extra_model_paths.yaml <<'CONFIG'
+    # Create extra_model_paths.yaml template
+    cat > $out/share/comfyui/extra_model_paths.yaml <<'YAML'
 # ComfyUI Extra Model Paths Configuration
 comfyui:
   base_path: ~/comfyui-work/
@@ -160,7 +146,7 @@ comfyui:
   upscale_models: models/upscale_models/
   embeddings: models/embeddings/
   controlnet: models/controlnet/
-CONFIG
+YAML
 
     # Create activation hook script for runtime environment
     mkdir -p $out/etc/profile.d

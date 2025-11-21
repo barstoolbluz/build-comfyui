@@ -27,7 +27,9 @@
         ]
       }
     },
-    "hook": {},
+    "hook": {
+      "on-activate": "  # Create ComfyUI working directory and subdirectories\n  mkdir -p \"$HOME/comfyui-work\"/{models/{checkpoints,clip,unet,vae,loras,upscale_models,embeddings,controlnet},output,input,temp}\n\n  # Copy extra_model_paths.yaml from package if it doesn't exist\n  if [ ! -f \"$HOME/comfyui-work/extra_model_paths.yaml\" ]; then\n    # Try to find the config in the ComfyUI package\n    if [ -f \"$FLOX_ENV/share/comfyui/extra_model_paths.yaml\" ]; then\n      cp \"$FLOX_ENV/share/comfyui/extra_model_paths.yaml\" \"$HOME/comfyui-work/extra_model_paths.yaml\"\n      # Replace ~/ with actual home directory path\n      sed -i \"s|~/|$HOME/|g\" \"$HOME/comfyui-work/extra_model_paths.yaml\"\n      echo \"✅ Copied extra_model_paths.yaml to $HOME/comfyui-work/\"\n    else\n      echo \"⚠️  Could not find extra_model_paths.yaml in package\"\n    fi\n  fi\n"
+    },
     "profile": {},
     "options": {}
   },
