@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ComfyUI Model Downloader
+# Helper script to download popular Stable Diffusion and FLUX models
+
+# Determine script location (works both in dev and installed)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Check if we're installed (look for share dir relative to bin)
+if [ -d "$SCRIPT_DIR/../share/comfyui-tools" ]; then
+    TOOLS_DIR="$SCRIPT_DIR/../share/comfyui-tools"
+else
+    # Development mode - scripts are in same directory
+    TOOLS_DIR="$SCRIPT_DIR"
+fi
+
+show_usage() {
+    cat <<EOF
+ComfyUI Model Downloader
+
+Usage: comfyui-download <model>
+
+Available models:
+  sd15   - Stable Diffusion 1.5 (4.3GB)
+           Fast, 512x512, good for quick iterations
+
+  sdxl   - Stable Diffusion XL (6.9GB)
+           High quality, 1024x1024, balanced performance
+
+  sd35   - Stable Diffusion 3.5 Large (27GB)
+           Highest quality, requires TripleCLIPLoader
+           Requires: HuggingFace token
+
+  flux   - FLUX.1 Dev (23GB with FP8 quantization)
+           State-of-the-art quality, flexible resolution
+           Requires: HuggingFace token
+           Note: Downloads FP8 quantized models for lower VRAM
+
+Environment variables:
+  HF_TOKEN                - HuggingFace token (required for sd35 and flux)
+  COMFYUI_MODELS_DIR      - Custom models directory (default: ~/comfyui-work/models)
+
+Examples:
+  # Download SD 1.5 (no token required)
+  comfyui-download sd15
+
+  # Download with environment token
+  HF_TOKEN=hf_xxx comfyui-download sd35
+
+  # Download to custom location
+  COMFYUI_MODELS_DIR=/custom/path comfyui-download flux
+
+Notes:
+  - sd15 and sdxl typically don't require authentication
+  - sd35 and flux REQUIRE a HuggingFace token
+  - Scripts will prompt interactively if token is needed but not found
+  - Get your token at: https://huggingface.co/settings/tokens
+
+EOF
+}
+
+if [ $# -eq 0 ]; then
+    show_usage
+    exit 1
+fi
+
+MODEL="$1"
+
+case "$MODEL" in
+    sd15)
+        echo "Downloading Stable Diffusion 1.5..."
+        "$TOOLS_DIR/download-sd15-wrapped"
+        ;;
+    sdxl)
+        echo "Downloading Stable Diffusion XL..."
+        "$TOOLS_DIR/download-sdxl-wrapped"
+        ;;
+    sd35)
+        echo "Downloading Stable Diffusion 3.5 Large..."
+        if [ -z "${HF_TOKEN:-}" ]; then
+            echo "⚠️  HF_TOKEN not set. Script will prompt for token."
+            echo ""
+        fi
+        "$TOOLS_DIR/download-sd35-wrapped"
+        ;;
+    flux)
+        echo "Downloading FLUX.1 Dev (FP8 quantized)..."
+        if [ -z "${HF_TOKEN:-}" ]; then
+            echo "⚠️  HF_TOKEN not set. Script will prompt for token."
+            echo ""
+        fi
+        "$TOOLS_DIR/download-flux-wrapped"
+        ;;
+    *)
+        echo "❌ Unknown model: $MODEL"
+        echo ""
+        show_usage
+        exit 1
+        ;;
+esac
