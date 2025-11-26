@@ -1,6 +1,11 @@
 { lib
 , python3
 , fetchurl
+, comfyui-workflow-templates-core
+, comfyui-workflow-templates-media-api
+, comfyui-workflow-templates-media-video
+, comfyui-workflow-templates-media-image
+, comfyui-workflow-templates-media-other
 }:
 
 python3.pkgs.buildPythonPackage rec {
@@ -13,8 +18,15 @@ python3.pkgs.buildPythonPackage rec {
     hash = "sha256-tPF2mr3BrqXKNAxlzx9cI1OJfH3gyzKc8IrtN8co8qM=";
   };
 
-  propagatedBuildInputs = [ ];
+  propagatedBuildInputs = [
+    comfyui-workflow-templates-core
+    comfyui-workflow-templates-media-api
+    comfyui-workflow-templates-media-video
+    comfyui-workflow-templates-media-image
+    comfyui-workflow-templates-media-other
+  ];
 
+  dontBuild = true;
   doCheck = false;
 
   meta = with lib; {

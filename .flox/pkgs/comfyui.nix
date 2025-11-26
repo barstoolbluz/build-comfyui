@@ -4,6 +4,11 @@
 , makeWrapper
 , comfyui-frontend-package
 , comfyui-workflow-templates
+, comfyui-workflow-templates-core
+, comfyui-workflow-templates-media-api
+, comfyui-workflow-templates-media-video
+, comfyui-workflow-templates-media-image
+, comfyui-workflow-templates-media-other
 , comfyui-embedded-docs
 , spandrel
 , nunchaku
