@@ -205,6 +205,15 @@ See [USAGE.md](./USAGE.md) for detailed usage instructions.
 
 ---
 
+## Known Issues
+
+See [KNOWN-ISSUES.md](./KNOWN-ISSUES.md) for platform-specific issues and workarounds.
+
+**Current known issues:**
+- **macOS**: Duplicate FFmpeg class warnings (harmless, can be ignored)
+
+---
+
 ## Publishing Strategy
 
 ### Recommended Workflow
