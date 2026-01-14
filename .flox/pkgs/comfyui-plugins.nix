@@ -8,7 +8,7 @@
 
 stdenv.mkDerivation rec {
   pname = "comfyui-plugins";
-  version = "0.9.1";  # Match ComfyUI version
+  version = "0.6.0";  # Match ComfyUI version
 
   # Start with just Impact Pack for now
   src = fetchFromGitHub {
