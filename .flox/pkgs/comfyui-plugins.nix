@@ -18,11 +18,13 @@ stdenv.mkDerivation rec {
   pname = "comfyui-plugins";
   version = "0.9.1";  # Match ComfyUI version
 
-  # Start with just Impact Pack for now
+  # Impact Pack - temporarily using older version
+  # TODO: Update to latest commit (6a517ebe479fb4f039f1c62e0e479b436b656e6c) once hash is determined
+  # The newer version supports ComfyUI v0.9.1's node 2.0 frontend which would fix deprecation warnings
   src = fetchFromGitHub {
     owner = "ltdrdata";
     repo = "ComfyUI-Impact-Pack";
-    rev = "8.28";  # Latest version
+    rev = "8.28";  # Older stable version - causes deprecation warnings with ComfyUI v0.9.1
     hash = "sha256-V/gMPqo9Xx21+KpG5LPzP5bML9nGlHHMyVGoV+YgFWE=";
   };
 
