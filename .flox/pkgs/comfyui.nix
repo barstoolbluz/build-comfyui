@@ -43,7 +43,7 @@ let
     src = nixpkgs_pinned.fetchPypi {
       pname = "av";
       inherit version;
-      hash = "sha256-9IhUQeAcJs/fGG0YN4kKKQJJcCYQPEQVvI6sLiQQJqU=";
+      hash = "sha256-EytdUsomK5ewNW6PSMu+VNCsIyEHpyKrjMjAwZ6voXs=";
     };
   });
 in
