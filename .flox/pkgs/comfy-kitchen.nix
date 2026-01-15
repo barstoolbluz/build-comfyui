@@ -11,7 +11,7 @@ python3Packages.buildPythonPackage rec {
     format = "wheel";
     dist = "py3";
     python = "py3";
-    hash = "sha256-v/DhUGNJHvX38n8LYA/7CfM0dMRLdcsfJgHGJZKYUyk=";
+    hash = "sha256-8rNDVgFVgMwQ5h3f9tHXp3TE/5yn4oAyylGk9EbuJi4=";
   };
 
   # No dependencies listed
