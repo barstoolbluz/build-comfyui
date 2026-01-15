@@ -1,0 +1,21 @@
+--- a/nodes.py
++++ b/nodes.py
+@@ -2069,10 +2069,15 @@
+ def init_builtin_extra_nodes():
+     extras_dirs = os.path.join(base_path, "comfy_extras")
+
+-    extras_dirs = [extras_dirs]
+-
++    # List of problematic audio nodes to skip
++    skip_nodes = {
++        "nodes_audio.py",      # Requires torchaudio
++        "nodes_lt_audio.py",   # Requires torchaudio
++        "nodes_audio_encoder.py" # Requires torchaudio
++    }
++
+     for extras_dir in extras_dirs:
+-        load_custom_nodes(extras_dir)
++        load_custom_nodes(extras_dir, skip_list=skip_nodes)
+
+
+ def init_external_custom_nodes():
