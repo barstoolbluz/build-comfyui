@@ -17,8 +17,9 @@ python3Packages.buildPythonPackage rec {
   # Dependencies
   propagatedBuildInputs = with python3Packages; [ torch ];
 
-  # Skip import check since it requires torch
+  # Disable all checks for pre-built wheel
   doCheck = false;
+  dontBuild = true;
   pythonImportsCheck = [ ];
 
   meta = with lib; {
