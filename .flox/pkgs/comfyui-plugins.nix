@@ -18,14 +18,12 @@ stdenv.mkDerivation rec {
   pname = "comfyui-plugins";
   version = "0.9.1";  # Match ComfyUI version
 
-  # Impact Pack - temporarily using older version
-  # TODO: Update to latest commit (6a517ebe479fb4f039f1c62e0e479b436b656e6c) once hash is determined
-  # The newer version supports ComfyUI v0.9.1's node 2.0 frontend which would fix deprecation warnings
+  # Impact Pack - updated to latest version with ComfyUI v0.9.1 node 2.0 frontend support
   src = fetchFromGitHub {
     owner = "ltdrdata";
     repo = "ComfyUI-Impact-Pack";
-    rev = "8.28";  # Older stable version - causes deprecation warnings with ComfyUI v0.9.1
-    hash = "sha256-V/gMPqo9Xx21+KpG5LPzP5bML9nGlHHMyVGoV+YgFWE=";
+    rev = "6a517ebe06fea2b74fc41b3bd089c0d7173eeced";  # Latest commit with node 2.0 support
+    hash = "sha256-BBHW3t122z+FC/VaD6MPp8l/ER9nEs3dJTcFU3Qeskg=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
