@@ -36,6 +36,16 @@ let
   gguf = nixpkgs_pinned.callPackage ./gguf.nix {};
   accelerate = nixpkgs_pinned.callPackage ./accelerate.nix {};
   comfy-kitchen = nixpkgs_pinned.callPackage ./comfy-kitchen.nix {};
+
+  # Override av to 14.2+ for API nodes support (pinned nixpkgs has 14.1.0)
+  av = nixpkgs_pinned.python3Packages.av.overrideAttrs (oldAttrs: rec {
+    version = "14.2.0";
+    src = nixpkgs_pinned.fetchPypi {
+      pname = "av";
+      inherit version;
+      hash = "sha256-9IhUQeAcJs/fGG0YN4kKKQJJcCYQPEQVvI6sLiQQJqU=";
+    };
+  });
 in
 
 python3.pkgs.buildPythonApplication rec {
@@ -70,6 +80,7 @@ python3.pkgs.buildPythonApplication rec {
     gguf              # GGUF quantized model support (critical for FLUX) - custom override for Darwin
     accelerate        # Model loading optimization - custom override for Darwin
     comfy-kitchen     # FP8/FP4 support for optimized inference (v0.9.1+)
+    av                # Media library - overridden to 14.2.0 for API nodes support
   ] ++ (with python3.pkgs; [
     # PyTorch stack - Override with CUDA-optimized if needed
     torch
@@ -107,8 +118,7 @@ python3.pkgs.buildPythonApplication rec {
     alembic
     sqlalchemy
 
-    # Media
-    av
+    # Media - removed, using custom override below
 
     # Utilities
     tqdm
