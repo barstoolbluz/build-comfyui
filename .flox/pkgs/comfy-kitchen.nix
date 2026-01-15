@@ -3,12 +3,15 @@
 python3Packages.buildPythonPackage rec {
   pname = "comfy-kitchen";
   version = "0.2.6";
-  format = "setuptools";
+  format = "wheel";
 
   src = fetchPypi {
     pname = "comfy_kitchen";
     inherit version;
-    hash = "sha256-sPx5+K6x7sE9MNKDBzSmD6CcKBsJmwtq+qDu9h0vNBs=";
+    format = "wheel";
+    dist = "py3";
+    python = "py3";
+    hash = "sha256-v/DhUGNJHvX38n8LYA/7CfM0dMRLdcsfJgHGJZKYUyk=";
   };
 
   # No dependencies listed
