@@ -115,6 +115,7 @@ python3.pkgs.buildPythonApplication rec {
     psutil
     packaging         # Required for comfy_api.latest (audio nodes)
     huggingface-hub   # Model downloads
+    typing-extensions # Required for API nodes (gemini, moonvalley, etc.)
 
     # Workflow support dependencies
     opencv-python     # ControlNet preprocessors (Canny, HED, etc.)
