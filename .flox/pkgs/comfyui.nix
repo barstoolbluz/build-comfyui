@@ -35,6 +35,7 @@ let
   controlnet-aux = nixpkgs_pinned.callPackage ./controlnet-aux.nix {};
   gguf = nixpkgs_pinned.callPackage ./gguf.nix {};
   accelerate = nixpkgs_pinned.callPackage ./accelerate.nix {};
+  comfy-kitchen = nixpkgs_pinned.callPackage ./comfy-kitchen.nix {};
 in
 
 python3.pkgs.buildPythonApplication rec {
@@ -68,6 +69,7 @@ python3.pkgs.buildPythonApplication rec {
     # Custom overridden packages (with Darwin fixes)
     gguf              # GGUF quantized model support (critical for FLUX) - custom override for Darwin
     accelerate        # Model loading optimization - custom override for Darwin
+    comfy-kitchen     # FP8/FP4 support for optimized inference (v0.9.1+)
   ] ++ (with python3.pkgs; [
     # PyTorch stack - Override with CUDA-optimized if needed
     torch
