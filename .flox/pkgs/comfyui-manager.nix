@@ -39,11 +39,16 @@ stdenv.mkDerivation rec {
     # Copy all files
     cp -r . $out/share/comfyui/custom_nodes/ComfyUI-Manager/
 
-    # Patch manager_util.py to add --system flag for Nix/Flox environments
-    # This prevents "No virtual environment found" errors when using uv
-    sed -i "s/\['-m', 'uv', 'pip'\]/['-m', 'uv', 'pip', '--system']/g" \
+    # Fix manager_util.py for Nix/Flox environments
+    # First remove any incorrect patches that put --system in wrong place
+    sed -i "s/\['-m', 'uv', 'pip', '--system'\]/['-m', 'uv', 'pip']/g" \
       $out/share/comfyui/custom_nodes/ComfyUI-Manager/glob/manager_util.py
-    sed -i "s/\['uv', 'pip'\]/['uv', 'pip', '--system']/g" \
+    sed -i "s/\['uv', 'pip', '--system'\]/['uv', 'pip']/g" \
+      $out/share/comfyui/custom_nodes/ComfyUI-Manager/glob/manager_util.py
+
+    # Add smart --system flag handling for uv install/uninstall only
+    # Uses printf to preserve Python indentation in Nix context
+    sed -i "$(printf '%b' '/^    return base_cmd + cmd$/i\\\n    # For Nix/Flox: Add --system flag for uv install/uninstall\\\n    if \"uv\" in str(base_cmd) and len(cmd) > 0 and cmd[0].lower() in [\"install\", \"uninstall\"]:\\\n        return base_cmd + [cmd[0], \"--system\"] + cmd[1:]')" \
       $out/share/comfyui/custom_nodes/ComfyUI-Manager/glob/manager_util.py
 
     # Create activation script that links Manager into ComfyUI
