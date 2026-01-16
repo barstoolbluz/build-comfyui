@@ -49,6 +49,7 @@ let
 
     # Skip import check as it requires specific setup
     doCheck = false;
+    dontBuild = true;  # It's a wheel, no build needed
     pythonImportsCheck = [ ];
 
     meta = with lib; {
