@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
     if [ -n "$1" ]; then
       COMFYUI_DIR="$1"
     else
-      COMFYUI_DIR="''${COMFYUI_WORK_DIR:-$HOME/comfyui-work}/default"
+      COMFYUI_DIR="''${COMFYUI_WORK_DIR:-$HOME/comfyui-work}"
     fi
 
     if [ ! -d "$COMFYUI_DIR" ]; then
@@ -91,7 +91,7 @@ stdenv.mkDerivation rec {
     #!${bash}/bin/bash
     set -e
 
-    COMFYUI_DIR="''${COMFYUI_WORK_DIR:-$HOME/comfyui-work}/default"
+    COMFYUI_DIR="''${COMFYUI_WORK_DIR:-$HOME/comfyui-work}"
     MODELS_DIR="$COMFYUI_DIR/models"
 
     echo "Downloading Impact Pack models to: $MODELS_DIR"
