@@ -39,6 +39,13 @@ stdenv.mkDerivation rec {
     # Copy all files
     cp -r . $out/share/comfyui/custom_nodes/ComfyUI-Manager/
 
+    # Patch manager_util.py to add --system flag for Nix/Flox environments
+    # This prevents "No virtual environment found" errors when using uv
+    sed -i "s/\['-m', 'uv', 'pip'\]/['-m', 'uv', 'pip', '--system']/g" \
+      $out/share/comfyui/custom_nodes/ComfyUI-Manager/glob/manager_util.py
+    sed -i "s/\['uv', 'pip'\]/['uv', 'pip', '--system']/g" \
+      $out/share/comfyui/custom_nodes/ComfyUI-Manager/glob/manager_util.py
+
     # Create activation script that links Manager into ComfyUI
     cat > $out/bin/comfyui-activate-manager << 'EOF'
     #!${bash}/bin/bash

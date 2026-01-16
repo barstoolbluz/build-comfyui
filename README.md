@@ -23,10 +23,15 @@ flox publish -o yourcatalog comfyui-base
 # Core ComfyUI
 flox install yourcatalog/comfyui
 
+# Optional: Package manager for runtime custom node installation
+flox install yourcatalog/comfyui-manager
+comfyui-activate-manager
+
+# Optional: YOLO detection support (Python package)
+flox install yourcatalog/comfyui-ultralytics
+
 # Optional: Custom node plugins (Impact Pack for face enhancement)
 flox install yourcatalog/comfyui-plugins
-
-# After installing plugins, activate them:
 comfyui-activate-plugins
 comfyui-download-impact-models  # Download required models
 ```
@@ -62,6 +67,8 @@ flox build comfyui
 ```
 .flox/pkgs/
 ├── comfyui-base.nix              # Main ComfyUI package
+├── comfyui-manager.nix           # Package manager for custom nodes
+├── comfyui-ultralytics.nix       # YOLO detection support
 ├── comfyui-frontend-package.nix  # Web UI (PyPI package)
 ├── comfyui-workflow-templates.nix # Example workflows (PyPI package)
 ├── comfyui-embedded-docs.nix     # Documentation (PyPI package)
@@ -98,6 +105,8 @@ This package tracks [ComfyUI upstream releases](https://github.com/comfyanonymou
 | **Nunchaku** | **0.16.1** | **[PyPI](https://pypi.org/project/nunchaku/)** (FLUX optimization) |
 | **ControlNet Aux** | **0.0.10** | **[PyPI](https://pypi.org/project/controlnet-aux/)** (Advanced preprocessors) |
 | **Impact Pack** | **8.28** | **[GitHub](https://github.com/ltdrdata/ComfyUI-Impact-Pack)** (Face enhancement plugin) |
+| **ComfyUI-Manager** | **latest** | **[GitHub](https://github.com/ltdrdata/ComfyUI-Manager)** (Package manager) |
+| **ComfyUI-Ultralytics** | **0.9.1** | Built-in YOLO detection support |
 
 ### Updating to Latest Upstream
 
@@ -235,6 +244,8 @@ fi
 - ✅ **Complete dependencies** - All Python packages needed for common workflows
 - ✅ **Interactive model downloads** - Smart token handling with multiple fallbacks
 - ✅ **Cross-platform** - Works on Linux and macOS (CPU mode)
+- ✅ **Runtime package management** - ComfyUI-Manager for custom node installation
+- ✅ **OpenCV standardized** - All packages use opencv4 to prevent conflicts
 
 See [USAGE.md](./USAGE.md) for detailed usage instructions.
 
