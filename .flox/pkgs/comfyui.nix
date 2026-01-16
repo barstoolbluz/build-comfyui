@@ -128,7 +128,7 @@ python3.pkgs.buildPythonApplication rec {
     typing-extensions # Required for API nodes (gemini, moonvalley, etc.)
 
     # Workflow support dependencies
-    opencv-python     # ControlNet preprocessors (Canny, HED, etc.)
+    opencv4           # ControlNet preprocessors (Canny, HED, etc.) - using opencv4 to avoid conflicts
 
     # Additional dependencies for workflow optimization
     timm              # PyTorch Image Models (for controlnet-aux)

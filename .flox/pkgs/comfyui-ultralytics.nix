@@ -29,7 +29,7 @@ let
     propagatedBuildInputs = with python3.pkgs; [
       # Core dependencies
       numpy
-      opencv-python
+      opencv4  # Use opencv4 instead of opencv-python to avoid conflicts
       pillow
       pyyaml
       requests

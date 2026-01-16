@@ -15,7 +15,7 @@ python3.pkgs.buildPythonPackage rec {
     importlib-metadata
     huggingface-hub
     scipy
-    opencv-python
+    opencv4  # Use opencv4 instead of opencv-python to avoid conflicts
     filelock
     numpy
     pillow
