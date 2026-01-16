@@ -127,6 +127,14 @@ python3.pkgs.buildPythonApplication rec {
     huggingface-hub   # Model downloads
     typing-extensions # Required for API nodes (gemini, moonvalley, etc.)
 
+    # ComfyUI-Manager dependencies
+    gitpython         # Git operations for Manager
+    pygithub          # GitHub API for Manager
+    rich              # Terminal formatting for Manager
+    typer             # CLI framework for Manager
+    toml              # Config file parsing for Manager
+    chardet           # Encoding detection for Manager
+
     # Workflow support dependencies
     opencv4           # ControlNet preprocessors (Canny, HED, etc.) - using opencv4 to avoid conflicts
 
