@@ -23,7 +23,7 @@ let
       inherit pname version format;
       dist = "py3";
       python = "py3";
-      hash = "";  # Will get from build error
+      hash = "sha256-2jXVueQjC3Hyt2IsGzNrEI3q0Tj8b08hmXTwrwG03gU=";
     };
 
     propagatedBuildInputs = with python3.pkgs; [
