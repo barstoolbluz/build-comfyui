@@ -12,7 +12,7 @@ let
     };
   };
 
-  inherit (nixpkgs_pinned) lib python3 fetchFromGitHub makeWrapper;
+  inherit (nixpkgs_pinned) lib python3 fetchFromGitHub makeWrapper uv;
 
   # Import ComfyUI dependencies using the same pinned nixpkgs
   # Need to resolve dependencies between packages
@@ -145,7 +145,7 @@ python3.pkgs.buildPythonApplication rec {
     pandas            # Data analysis (for nunchaku)
   ]);
 
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [ makeWrapper uv ];
 
   # Skip build phase - ComfyUI runs from source
   dontBuild = true;
@@ -192,7 +192,8 @@ python3.pkgs.buildPythonApplication rec {
     makeWrapper ${python3}/bin/python3 $out/bin/comfyui \
       --add-flags "$out/share/comfyui/main.py" \
       --suffix PYTHONPATH : "$out/share/comfyui" \
-      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}"
+      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}" \
+      --prefix PATH : "${uv}/bin"
 
     runHook postInstall
   '';
