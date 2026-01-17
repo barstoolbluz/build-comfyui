@@ -13,10 +13,16 @@ let
 
   inherit (nixpkgs_pinned) lib stdenv fetchFromGitHub bash python313 python313Packages;
 
+  # Override ultralytics to disable tests that require network access
+  ultralytics-no-tests = python313Packages.ultralytics.overridePythonAttrs (oldAttrs: {
+    doCheck = false;
+    pytestCheckPhase = "true";  # Skip all tests
+  });
+
   # Python dependencies for Impact Subpack
   pythonWithDeps = python313.withPackages (ps: with ps; [
     matplotlib
-    ultralytics
+    ultralytics-no-tests
     numpy
     opencv4  # opencv-python-headless
     dill
