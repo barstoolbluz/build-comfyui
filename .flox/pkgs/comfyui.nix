@@ -266,7 +266,7 @@ if [ "\''${have_base}" -eq 0 ]; then
 extra_args+=(--base-directory "\''${WORK_DIR}")
 fi
 
-exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
+exec /usr/bin/env -u PYTHONPATH -u PYTHONHOME "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
 EOF
     chmod +x $out/bin/comfyui
 
