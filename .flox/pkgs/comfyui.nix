@@ -135,6 +135,9 @@ python3.pkgs.buildPythonApplication rec {
     toml              # Config file parsing for Manager
     chardet           # Encoding detection for Manager
 
+    # Impact Subpack dependencies
+    dill              # Serialization for Impact Subpack
+
     # Workflow support dependencies
     opencv4           # ControlNet preprocessors (Canny, HED, etc.) - using opencv4 to avoid conflicts
 
