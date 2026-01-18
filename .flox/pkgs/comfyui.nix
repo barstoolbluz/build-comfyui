@@ -193,11 +193,13 @@ python3.pkgs.buildPythonApplication rec {
     # Create wrapper script for comfyui
     # Use --suffix so environment packages can override bundled versions
     # Use python3 directly but ensure sqlite3 is available via PYTHONPATH
+    # Also add user-writable packages directory for Manager-installed deps
     makeWrapper ${python3}/bin/python3 $out/bin/comfyui \
       --add-flags "$out/share/comfyui/main.py" \
       --suffix PYTHONPATH : "$out/share/comfyui" \
       --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}" \
       --suffix PYTHONPATH : "${python3}/lib/python${python3.pythonVersion}" \
+      --suffix PYTHONPATH : "\$HOME/comfyui-work/custom_python_packages" \
       --prefix PATH : "${uv}/bin"
 
     runHook postInstall
