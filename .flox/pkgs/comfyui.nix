@@ -176,9 +176,6 @@ python3.pkgs.buildPythonApplication rec {
     # Build Python environment with all dependencies
     pythonEnv="${python3.withPackages (ps: propagatedBuildInputs)}"
 
-    # Use raw CPython for venv creation, not the wrapped version
-    rawPython="${python3}/bin/python3"
-
     # Install enhanced model download tools (as library scripts)
     cp ${../../assets/download-sd15-enhanced.py} $out/share/comfyui-tools/download-sd15.py
     cp ${../../assets/download-sdxl-enhanced.py} $out/share/comfyui-tools/download-sdxl.py
@@ -209,11 +206,7 @@ set -euo pipefail
 
 WORK_DIR="\''${COMFYUI_WORK_DIR:-\''${HOME}/comfyui-work}"
 VENV_DIR="\''${WORK_DIR}/.venv"
-BASE_PY="$rawPython"
-
-# Unset Python environment variables that can interfere with venv
-unset PYTHONHOME
-unset PYTHONPATH
+BASE_PY="$pythonEnv/bin/python3"
 
 # ComfyUI v0.9.x stores state (including a sqlite DB) under a `user/` directory.
 # When ComfyUI is launched from /nix/store, its default paths can resolve into a
@@ -239,6 +232,12 @@ PTH
 
 export VIRTUAL_ENV="\''${VENV_DIR}"
 export PATH="\''${VENV_DIR}/bin:$out/bin:${uv}/bin:\''${PATH}"
+
+# Flox (and other launchers) may inject PYTHON* variables. Those can cause Python
+# to compute stdlib paths incorrectly (for example, breaking `import sqlite3`),
+# which then makes ComfyUI's DB init fail and leaves `Session` as None.
+unset PYTHONHOME 2>/dev/null || true
+unset PYTHONPATH 2>/dev/null || true
 
 # Use a writable working directory so relative paths resolve under WORK_DIR.
 cd "\''${WORK_DIR}"
@@ -266,7 +265,8 @@ if [ "\''${have_base}" -eq 0 ]; then
 extra_args+=(--base-directory "\''${WORK_DIR}")
 fi
 
-exec /usr/bin/env -u PYTHONPATH -u PYTHONHOME "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
+# Run Python in isolated mode so it ignores any remaining PYTHON* env vars.
+exec "\''${VENV_DIR}/bin/python" -I "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
 EOF
     chmod +x $out/bin/comfyui
 
