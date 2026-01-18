@@ -1,4 +1,4 @@
 result-comfyui*
 result-controlnet-aux*
-comfyui-manager.patched.nix
-comfyui.patched.nix
+comfyui-manager.patched*.nix
+comfyui.patched*.nix
