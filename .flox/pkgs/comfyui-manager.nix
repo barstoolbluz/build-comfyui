@@ -46,10 +46,6 @@ stdenv.mkDerivation rec {
     sed -i "s/\['uv', 'pip', '--system'\]/['uv', 'pip']/g" \
       $out/share/comfyui/custom_nodes/ComfyUI-Manager/glob/manager_util.py
 
-    # Add smart --target flag handling for uv install to user-writable directory
-    # Uses printf to preserve Python indentation in Nix context
-    sed -i "$(printf '%b' '/^    return base_cmd + cmd$/i\\\n    # For Nix/Flox: Add --target flag for uv install to user-writable location\\\n    import os\\\n    if \"uv\" in str(base_cmd) and len(cmd) > 0:\\\n        if cmd[0].lower() == \"install\":\\\n            target_dir = os.path.expanduser(\"~/comfyui-work/custom_python_packages\")\\\n            os.makedirs(target_dir, exist_ok=True)\\\n            return base_cmd + [cmd[0], \"--target\", target_dir] + cmd[1:]\\\n        elif cmd[0].lower() == \"uninstall\":\\\n            return base_cmd + [cmd[0], \"--system\"] + cmd[1:]')" \
-      $out/share/comfyui/custom_nodes/ComfyUI-Manager/glob/manager_util.py
 
     # Create activation script that links Manager into ComfyUI
     cat > $out/bin/comfyui-activate-manager << 'EOF'

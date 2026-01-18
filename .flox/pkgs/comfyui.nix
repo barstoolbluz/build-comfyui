@@ -12,7 +12,7 @@ let
     };
   };
 
-  inherit (nixpkgs_pinned) lib python3 fetchFromGitHub makeWrapper uv;
+  inherit (nixpkgs_pinned) lib python3 fetchFromGitHub makeWrapper uv bash;
 
   # Import ComfyUI dependencies using the same pinned nixpkgs
   # Need to resolve dependencies between packages
@@ -190,17 +190,53 @@ python3.pkgs.buildPythonApplication rec {
     cp ${../../assets/comfyui-download-enhanced} $out/bin/comfyui-download
     chmod +x $out/bin/comfyui-download
 
-    # Create wrapper script for comfyui
-    # Use --suffix so environment packages can override bundled versions
-    # Use python3 directly but ensure sqlite3 is available via PYTHONPATH
-    # Also add user-writable packages directory for Manager-installed deps
-    makeWrapper ${python3}/bin/python3 $out/bin/comfyui \
-      --add-flags "$out/share/comfyui/main.py" \
-      --suffix PYTHONPATH : "$out/share/comfyui" \
-      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}" \
-      --suffix PYTHONPATH : "${python3}/lib/python${python3.pythonVersion}" \
-      --suffix PYTHONPATH : "\$HOME/comfyui-work/custom_python_packages" \
-      --prefix PATH : "${uv}/bin"
+    # Create launch script for ComfyUI.
+    #
+    # ComfyUI-Manager installs Python deps at runtime via `uv pip install`. In a Nix/Flox setup,
+    # writing into the Nix store is not possible, and `uv ... --system` forces installs into the
+    # system Python. We provide a per-user virtualenv (with system-site-packages) and run ComfyUI
+    # from that interpreter, so runtime installs land in a writable location.
+
+    cat > $out/bin/comfyui << EOF
+    #!${bash}/bin/bash
+    set -euo pipefail
+
+    WORK_DIR="\''${COMFYUI_WORK_DIR:-\$HOME/comfyui-work}"
+    VENV_DIR="\''${WORK_DIR}/.venv"
+    BASE_PY="$pythonEnv/bin/python3"
+
+    if [ ! -x "\''${VENV_DIR}/bin/python" ]; then
+      mkdir -p "\''${WORK_DIR}"
+      "\''${BASE_PY}" -m venv --system-site-packages "\''${VENV_DIR}"
+    fi
+
+    export VIRTUAL_ENV="\''${VENV_DIR}"
+    export PATH="\''${VENV_DIR}/bin:$out/bin:${uv}/bin:\''${PATH}"
+
+    exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\$@"
+    EOF
+    chmod +x $out/bin/comfyui
+
+    # Provide a uv shim that strips `--system` so ComfyUI-Manager installs into the venv.
+    cat > $out/bin/uv << EOF
+    #!${bash}/bin/bash
+    set -euo pipefail
+    real_uv="${uv}/bin/uv"
+
+    if [ "\''${1:-}" = "pip" ] && [ -n "\''${VIRTUAL_ENV:-}" ]; then
+      args=()
+      for a in "\$@"; do
+        if [ "\$a" = "--system" ]; then
+          continue
+        fi
+        args+=("\$a")
+      done
+      exec "\$real_uv" "\''${args[@]}"
+    fi
+
+    exec "\$real_uv" "\$@"
+    EOF
+    chmod +x $out/bin/uv
 
     runHook postInstall
   '';
