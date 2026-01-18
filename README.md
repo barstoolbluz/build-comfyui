@@ -34,17 +34,39 @@ flox install yourcatalog/comfyui-ultralytics
 flox install yourcatalog/comfyui-plugins
 comfyui-activate-plugins
 comfyui-download-impact-models  # Download required models
+
+# Optional: Impact Subpack (YOLO detection with onnxruntime)
+flox install yourcatalog/comfyui-impact-subpack
+comfyui-activate-impact-subpack
 ```
 
 ---
 
 ## Branching Strategy
 
-This repository follows a three-branch strategy for version management:
+This repository follows a three-branch rotation strategy for version management:
 
-- **`main`** - Stable version (v0.6.0) using standard toolchains from nixpkgs
+- **`main`** - Current stable version (v0.6.0) using standard toolchains from nixpkgs
 - **`nightly`** - Latest upstream version (v0.9.1) with bleeding-edge features
 - **`historical`** - Previous stable version (v0.6.0) maintained for compatibility
+
+### Branch Rotation
+
+When new ComfyUI versions are released, branches rotate to maintain three active versions:
+
+```
+When 0.9.2 releases:
+historical (0.6.0) → becomes branch v0.6.0 (preserved forever)
+main (0.6.0)       → becomes historical
+nightly (0.9.1)    → becomes main
+nightly            → updates to 0.9.2
+```
+
+This ensures:
+- Users on `main` get stable, tested versions
+- Bleeding-edge users track `nightly`
+- Conservative users can stay on `historical` for one cycle
+- Specific versions are preserved as branches (`v0.6.0`, `v0.9.1`, etc.)
 
 ### Switching Branches
 
@@ -53,12 +75,16 @@ This repository follows a three-branch strategy for version management:
 git checkout nightly
 flox build comfyui
 
-# Stable version
+# Current stable version
 git checkout main
 flox build comfyui
 
-# Historical version
+# Previous stable (compatibility)
 git checkout historical
+flox build comfyui
+
+# Specific version (after rotation)
+git checkout v0.9.1
 flox build comfyui
 ```
 
@@ -69,6 +95,7 @@ flox build comfyui
 ├── comfyui-base.nix              # Main ComfyUI package
 ├── comfyui-manager.nix           # Package manager for custom nodes
 ├── comfyui-ultralytics.nix       # YOLO detection support
+├── comfyui-impact-subpack.nix    # Impact Subpack with onnxruntime
 ├── comfyui-frontend-package.nix  # Web UI (PyPI package)
 ├── comfyui-workflow-templates.nix # Example workflows (PyPI package)
 ├── comfyui-embedded-docs.nix     # Documentation (PyPI package)
@@ -105,6 +132,7 @@ This package tracks [ComfyUI upstream releases](https://github.com/comfyanonymou
 | **Nunchaku** | **0.16.1** | **[PyPI](https://pypi.org/project/nunchaku/)** (FLUX optimization) |
 | **ControlNet Aux** | **0.0.10** | **[PyPI](https://pypi.org/project/controlnet-aux/)** (Advanced preprocessors) |
 | **Impact Pack** | **8.28** | **[GitHub](https://github.com/ltdrdata/ComfyUI-Impact-Pack)** (Face enhancement plugin) |
+| **Impact Subpack** | **1.3.5** | **[GitHub](https://github.com/ltdrdata/ComfyUI-Impact-Subpack)** (YOLO detection nodes) |
 | **ComfyUI-Manager** | **latest** | **[GitHub](https://github.com/ltdrdata/ComfyUI-Manager)** (Package manager) |
 | **ComfyUI-Ultralytics** | **0.9.1** | Built-in YOLO detection support |
 
