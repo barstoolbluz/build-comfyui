@@ -212,6 +212,7 @@ python3.pkgs.buildPythonApplication rec {
 
     export VIRTUAL_ENV="\''${VENV_DIR}"
     export PATH="\''${VENV_DIR}/bin:$out/bin:${uv}/bin:\''${PATH}"
+    export PYTHONPATH="$pythonEnv/${python3.sitePackages}:$out/share/comfyui:\''${PYTHONPATH}"
 
     exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\$@"
     EOF
