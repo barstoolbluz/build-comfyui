@@ -205,16 +205,53 @@ python3.pkgs.buildPythonApplication rec {
     VENV_DIR="\''${WORK_DIR}/.venv"
     BASE_PY="$pythonEnv/bin/python3"
 
+    # ComfyUI v0.9.x stores state (including a sqlite DB) under a `user/` directory.
+    # When ComfyUI is launched from /nix/store, its default paths can resolve into a
+    # read-only location, which makes DB init fail and leaves `Session` as None.
+    # (In ComfyUI's db.py, Session is only set inside init_db(), and create_session()
+    # simply calls Session().)
+
+    mkdir -p "\''${WORK_DIR}/user"
+
     if [ ! -x "\''${VENV_DIR}/bin/python" ]; then
       mkdir -p "\''${WORK_DIR}"
       "\''${BASE_PY}" -m venv --system-site-packages "\''${VENV_DIR}"
     fi
 
+    # Make Nix-provided Python packages visible to the venv interpreter without relying
+    # on PYTHONPATH. This writes a .pth file in the venv site-packages.
+    PTH_DIR="\''${VENV_DIR}/lib/python${python3.pythonVersion}/site-packages"
+    mkdir -p "\''${PTH_DIR}"
+    cat > "\''${PTH_DIR}/nix-site-packages.pth" <<PTH
+$pythonEnv/${python3.sitePackages}
+$out/share/comfyui
+PTH
+
     export VIRTUAL_ENV="\''${VENV_DIR}"
     export PATH="\''${VENV_DIR}/bin:$out/bin:${uv}/bin:\''${PATH}"
-    export PYTHONPATH="${python3}/lib/python${python3.pythonVersion}:$pythonEnv/${python3.sitePackages}:$out/share/comfyui:\''${PYTHONPATH}"
 
-    exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\$@"
+    # Use a writable working directory so relative paths resolve under WORK_DIR.
+    cd "\''${WORK_DIR}"
+
+    # If the caller did not specify database/user directories, default them into WORK_DIR.
+    have_db=0
+    have_userdir=0
+    for a in "\$@"; do
+      case "\$a" in
+        --database-url|--database_url) have_db=1 ;;
+        --user-directory|--user_directory) have_userdir=1 ;;
+      esac
+    done
+
+    extra_args=()
+    if [ "\''${have_db}" -eq 0 ]; then
+      extra_args+=(--database-url "sqlite:////\''${WORK_DIR}/user/comfyui.db")
+    fi
+    if [ "\''${have_userdir}" -eq 0 ]; then
+      extra_args+=(--user-directory "\''${WORK_DIR}/user")
+    fi
+
+    exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\$@"
     EOF
     chmod +x $out/bin/comfyui
 
