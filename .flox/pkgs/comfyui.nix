@@ -50,7 +50,7 @@ in
 
 python3.pkgs.buildPythonApplication rec {
   pname = "comfyui";
-  version = "0.9.1.1";
+  version = "0.9.1";
   format = "other";
 
   src = fetchFromGitHub {
