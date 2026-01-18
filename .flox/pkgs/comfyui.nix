@@ -12,7 +12,10 @@ let
     };
   };
 
-  inherit (nixpkgs_pinned) lib python3 fetchFromGitHub makeWrapper uv bash;
+  inherit (nixpkgs_pinned) lib fetchFromGitHub makeWrapper uv bash;
+
+  # Use Python 3.13 with sqlite support
+  python3 = nixpkgs_pinned.python313;
 
   # Import ComfyUI dependencies using the same pinned nixpkgs
   # Need to resolve dependencies between packages
@@ -173,6 +176,9 @@ python3.pkgs.buildPythonApplication rec {
     # Build Python environment with all dependencies
     pythonEnv="${python3.withPackages (ps: propagatedBuildInputs)}"
 
+    # Use raw CPython for venv creation, not the wrapped version
+    rawPython="${python3}/bin/python3"
+
     # Install enhanced model download tools (as library scripts)
     cp ${../../assets/download-sd15-enhanced.py} $out/share/comfyui-tools/download-sd15.py
     cp ${../../assets/download-sdxl-enhanced.py} $out/share/comfyui-tools/download-sdxl.py
@@ -203,7 +209,11 @@ set -euo pipefail
 
 WORK_DIR="\''${COMFYUI_WORK_DIR:-\''${HOME}/comfyui-work}"
 VENV_DIR="\''${WORK_DIR}/.venv"
-BASE_PY="$pythonEnv/bin/python3"
+BASE_PY="$rawPython"
+
+# Unset Python environment variables that can interfere with venv
+unset PYTHONHOME
+unset PYTHONPATH
 
 # ComfyUI v0.9.x stores state (including a sqlite DB) under a `user/` directory.
 # When ComfyUI is launched from /nix/store, its default paths can resolve into a
@@ -233,13 +243,15 @@ export PATH="\''${VENV_DIR}/bin:$out/bin:${uv}/bin:\''${PATH}"
 # Use a writable working directory so relative paths resolve under WORK_DIR.
 cd "\''${WORK_DIR}"
 
-# If the caller did not specify database/user directories, default them into WORK_DIR.
+# If the caller did not specify database/user/base directories, default them into WORK_DIR.
 have_db=0
 have_userdir=0
+have_base=0
 for a in "\''$@"; do
 case "\''${a}" in
 --database-url|--database_url) have_db=1 ;;
 --user-directory|--user_directory) have_userdir=1 ;;
+--base-directory|--base_directory) have_base=1 ;;
 esac
 done
 
@@ -249,6 +261,9 @@ extra_args+=(--database-url "sqlite:////\''${WORK_DIR}/user/comfyui.db")
 fi
 if [ "\''${have_userdir}" -eq 0 ]; then
 extra_args+=(--user-directory "\''${WORK_DIR}/user")
+fi
+if [ "\''${have_base}" -eq 0 ]; then
+extra_args+=(--base-directory "\''${WORK_DIR}")
 fi
 
 exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
