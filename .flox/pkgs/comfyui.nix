@@ -198,82 +198,82 @@ python3.pkgs.buildPythonApplication rec {
     # from that interpreter, so runtime installs land in a writable location.
 
     cat > $out/bin/comfyui << EOF
-    #!${bash}/bin/bash
-    set -euo pipefail
+#!${bash}/bin/bash
+set -euo pipefail
 
-    WORK_DIR="\''${COMFYUI_WORK_DIR:-\$HOME/comfyui-work}"
-    VENV_DIR="\''${WORK_DIR}/.venv"
-    BASE_PY="$pythonEnv/bin/python3"
+WORK_DIR="\''${COMFYUI_WORK_DIR:-\''${HOME}/comfyui-work}"
+VENV_DIR="\''${WORK_DIR}/.venv"
+BASE_PY="$pythonEnv/bin/python3"
 
-    # ComfyUI v0.9.x stores state (including a sqlite DB) under a `user/` directory.
-    # When ComfyUI is launched from /nix/store, its default paths can resolve into a
-    # read-only location, which makes DB init fail and leaves `Session` as None.
-    # (In ComfyUI's db.py, Session is only set inside init_db(), and create_session()
-    # simply calls Session().)
+# ComfyUI v0.9.x stores state (including a sqlite DB) under a `user/` directory.
+# When ComfyUI is launched from /nix/store, its default paths can resolve into a
+# read-only location, which makes DB init fail and leaves `Session` as None.
+# (In ComfyUI's db.py, Session is only set inside init_db(), and create_session()
+# simply calls Session().)
 
-    mkdir -p "\''${WORK_DIR}/user"
+mkdir -p "\''${WORK_DIR}/user"
 
-    if [ ! -x "\''${VENV_DIR}/bin/python" ]; then
-      mkdir -p "\''${WORK_DIR}"
-      "\''${BASE_PY}" -m venv --system-site-packages "\''${VENV_DIR}"
-    fi
+if [ ! -x "\''${VENV_DIR}/bin/python" ]; then
+mkdir -p "\''${WORK_DIR}"
+"\''${BASE_PY}" -m venv --system-site-packages "\''${VENV_DIR}"
+fi
 
-    # Make Nix-provided Python packages visible to the venv interpreter without relying
-    # on PYTHONPATH. This writes a .pth file in the venv site-packages.
-    PTH_DIR="\''${VENV_DIR}/lib/python${python3.pythonVersion}/site-packages"
-    mkdir -p "\''${PTH_DIR}"
-    cat > "\''${PTH_DIR}/nix-site-packages.pth" <<PTH
+# Make Nix-provided Python packages visible to the venv interpreter without relying
+# on PYTHONPATH. This writes a .pth file in the venv site-packages.
+PTH_DIR="\''${VENV_DIR}/lib/python${python3.pythonVersion}/site-packages"
+mkdir -p "\''${PTH_DIR}"
+cat > "\''${PTH_DIR}/nix-site-packages.pth" <<'PTH'
 $pythonEnv/${python3.sitePackages}
 $out/share/comfyui
 PTH
 
-    export VIRTUAL_ENV="\''${VENV_DIR}"
-    export PATH="\''${VENV_DIR}/bin:$out/bin:${uv}/bin:\''${PATH}"
+export VIRTUAL_ENV="\''${VENV_DIR}"
+export PATH="\''${VENV_DIR}/bin:$out/bin:${uv}/bin:\''${PATH}"
 
-    # Use a writable working directory so relative paths resolve under WORK_DIR.
-    cd "\''${WORK_DIR}"
+# Use a writable working directory so relative paths resolve under WORK_DIR.
+cd "\''${WORK_DIR}"
 
-    # If the caller did not specify database/user directories, default them into WORK_DIR.
-    have_db=0
-    have_userdir=0
-    for a in "\$@"; do
-      case "\$a" in
-        --database-url|--database_url) have_db=1 ;;
-        --user-directory|--user_directory) have_userdir=1 ;;
-      esac
-    done
+# If the caller did not specify database/user directories, default them into WORK_DIR.
+have_db=0
+have_userdir=0
+for a in "\''$@"; do
+case "\''${a}" in
+--database-url|--database_url) have_db=1 ;;
+--user-directory|--user_directory) have_userdir=1 ;;
+esac
+done
 
-    extra_args=()
-    if [ "\''${have_db}" -eq 0 ]; then
-      extra_args+=(--database-url "sqlite:////\''${WORK_DIR}/user/comfyui.db")
-    fi
-    if [ "\''${have_userdir}" -eq 0 ]; then
-      extra_args+=(--user-directory "\''${WORK_DIR}/user")
-    fi
+extra_args=()
+if [ "\''${have_db}" -eq 0 ]; then
+extra_args+=(--database-url "sqlite:////\''${WORK_DIR}/user/comfyui.db")
+fi
+if [ "\''${have_userdir}" -eq 0 ]; then
+extra_args+=(--user-directory "\''${WORK_DIR}/user")
+fi
 
-    exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\$@"
-    EOF
+exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
+EOF
     chmod +x $out/bin/comfyui
 
     # Provide a uv shim that strips `--system` so ComfyUI-Manager installs into the venv.
     cat > $out/bin/uv << EOF
-    #!${bash}/bin/bash
-    set -euo pipefail
-    real_uv="${uv}/bin/uv"
+#!${bash}/bin/bash
+set -euo pipefail
+real_uv="${uv}/bin/uv"
 
-    if [ "\''${1:-}" = "pip" ] && [ -n "\''${VIRTUAL_ENV:-}" ]; then
-      args=()
-      for a in "\$@"; do
-        if [ "\$a" = "--system" ]; then
-          continue
-        fi
-        args+=("\$a")
-      done
-      exec "\$real_uv" "\''${args[@]}"
-    fi
+if [ "\''${1:-}" = "pip" ] && [ -n "\''${VIRTUAL_ENV:-}" ]; then
+args=()
+for a in "\''$@"; do
+if [ "\''${a}" = "--system" ]; then
+continue
+fi
+args+=("\''${a}")
+done
+exec "\''${real_uv}" "\''${args[@]}"
+fi
 
-    exec "\$real_uv" "\$@"
-    EOF
+exec "\''${real_uv}" "\''$@"
+EOF
     chmod +x $out/bin/uv
 
     runHook postInstall
