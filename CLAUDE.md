@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## CRITICAL RULE
+
+**NEVER run `flox publish` under ANY circumstances. This is a human-only privilege. NO EXCEPTIONS.**
+
 ## Project Overview
 
 ComfyUI build packages for Flox with custom node support and runtime package management.
