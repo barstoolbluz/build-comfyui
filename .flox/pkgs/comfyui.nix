@@ -182,7 +182,8 @@ python3.pkgs.buildPythonApplication rec {
 
     # Create wrapper script for comfyui
     # Use --suffix so environment packages can override bundled versions
-    makeWrapper ${python3}/bin/python3 $out/bin/comfyui \
+    # Use pythonEnv which has all packages instead of raw python3
+    makeWrapper $pythonEnv/bin/python3 $out/bin/comfyui \
       --add-flags "$out/share/comfyui/main.py" \
       --suffix PYTHONPATH : "$out/share/comfyui" \
       --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}" \
