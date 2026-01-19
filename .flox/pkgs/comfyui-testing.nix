@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  inherit (pkgs) lib python3 fetchFromGitHub makeWrapper fetchPypi;
+  inherit (pkgs) lib python3 fetchFromGitHub makeWrapper fetchPypi uv;
 
   # Build comfyui-frontend-package
   comfyui-frontend-package = python3.pkgs.buildPythonPackage rec {
@@ -140,22 +140,25 @@ let
     packaging
     huggingface-hub
     typing-extensions
+
+    # Additional workflow/impact pack dependencies
+    scikit-image  # Required by Impact Pack
   ]);
 in
 
 python3.pkgs.buildPythonApplication rec {
   pname = "comfyui-testing";
-  version = "0.9.1";
+  version = "0.9.1-r1";  # Revision 1: Added all dependencies
   format = "other";
 
   src = fetchFromGitHub {
     owner = "comfyanonymous";
     repo = "ComfyUI";
-    rev = "v${version}";
+    rev = "v0.9.1";  # Use the actual upstream version
     hash = "sha256-tAbXhLoN3tuML3R1AdJ18stleFv4w0nZcUoySP6W9+0=";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [ makeWrapper uv ];
 
   dontBuild = true;
   doCheck = false;
@@ -174,11 +177,12 @@ python3.pkgs.buildPythonApplication rec {
     # Build Python environment with all dependencies
     pythonEnv="${pythonEnv}"
 
-    # Create wrapper script with proper PYTHONPATH
+    # Create wrapper script with proper PYTHONPATH and uv in PATH
     makeWrapper $pythonEnv/bin/python3 $out/bin/comfyui \
       --add-flags "$out/share/comfyui/main.py" \
       --suffix PYTHONPATH : "$out/share/comfyui" \
-      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}"
+      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}" \
+      --prefix PATH : "${uv}/bin"
 
     runHook postInstall
   '';
