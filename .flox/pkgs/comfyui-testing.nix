@@ -1,10 +1,48 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  inherit (pkgs) lib python3 fetchFromGitHub makeWrapper;
+  inherit (pkgs) lib python3 fetchFromGitHub makeWrapper fetchPypi;
+
+  # Build comfyui-frontend-package
+  comfyui-frontend-package = python3.pkgs.buildPythonPackage rec {
+    pname = "comfyui-frontend-package";
+    version = "1.34.9";
+    format = "wheel";
+    src = fetchPypi {
+      pname = "comfyui_frontend_package";
+      inherit version;
+      format = "wheel";
+      dist = "py3";
+      python = "py3";
+      hash = "sha256-g2ypUoTVcFc5RjJAw8SCanqKdycpJlanfL8LQaOa7HY=";
+    };
+    propagatedBuildInputs = [ ];
+    doCheck = false;
+  };
+
+  # Build comfy-kitchen
+  comfy-kitchen = python3.pkgs.buildPythonPackage rec {
+    pname = "comfy-kitchen";
+    version = "0.2.6";
+    format = "wheel";
+    src = fetchPypi {
+      pname = "comfy_kitchen";
+      inherit version;
+      format = "wheel";
+      dist = "py3";
+      python = "py3";
+      hash = "sha256-8rNDVgFVgMwQ5h3f9tHXp3TE/5yn4oAyylGk9EbuJi4=";
+    };
+    propagatedBuildInputs = with python3.pkgs; [ torch ];
+    doCheck = false;
+    dontBuild = true;
+  };
 
   # Build a Python environment with all required packages
   pythonEnv = python3.withPackages (ps: with ps; [
+    # ComfyUI-specific packages
+    comfyui-frontend-package
+    comfy-kitchen
     # Core ML/AI
     torch
     torchvision
