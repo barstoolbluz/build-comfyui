@@ -74,33 +74,49 @@ let
     dontBuild = true;
   };
 
-  # Build spandrel
+  # Build spandrel - wheel format to avoid build issues
   spandrel = python3.pkgs.buildPythonPackage rec {
     pname = "spandrel";
     version = "0.4.0";
-    pyproject = true;
-    src = fetchFromGitHub {
-      owner = "chaiNNer-org";
-      repo = "spandrel";
-      rev = "v${version}";
-      hash = "sha256-BiC4gmRsNkRAUonKHV7U/hvOP00pIPtm40ydmSlNDCI=";
+    format = "wheel";
+    src = fetchPypi {
+      inherit pname version;
+      format = "wheel";
+      dist = "py3";
+      python = "py3";
+      hash = "sha256-gZ8/Ff6UT+WJ9DujMVBFigDQ7QwujvHu8BmGFTIBJ7E=";
     };
-    build-system = with python3.pkgs; [ setuptools ];
     propagatedBuildInputs = with python3.pkgs; [
       torch torchvision numpy einops pillow safetensors
     ];
     doCheck = false;
+    dontBuild = true;
   };
 
-  # Build a Python environment with all required packages
-  pythonEnv = python3.withPackages (ps: with ps; [
-    # ComfyUI-specific packages
+in
+
+python3.pkgs.buildPythonApplication rec {
+  pname = "comfyui-testing";
+  version = "0.9.1-r2";  # Revision 2: Fix dependency inclusion
+  format = "other";
+
+  src = fetchFromGitHub {
+    owner = "comfyanonymous";
+    repo = "ComfyUI";
+    rev = "v0.9.1";  # Use the actual upstream version
+    hash = "sha256-tAbXhLoN3tuML3R1AdJ18stleFv4w0nZcUoySP6W9+0=";
+  };
+
+  nativeBuildInputs = [ makeWrapper uv ];
+
+  propagatedBuildInputs = [
+    # ComfyUI-specific packages built in let block
     comfyui-frontend-package
     comfy-kitchen
     comfyui-workflow-templates
     comfyui-embedded-docs
     spandrel
-    kornia  # For Canny edge detection and morphology
+  ] ++ (with python3.pkgs; [
     # Core ML/AI
     torch
     torchvision
@@ -110,6 +126,7 @@ let
     scipy
     pillow
     einops
+    kornia  # For Canny edge detection and morphology
 
     # Transformers and related
     transformers
@@ -144,21 +161,6 @@ let
     # Additional workflow/impact pack dependencies
     scikit-image  # Required by Impact Pack
   ]);
-in
-
-python3.pkgs.buildPythonApplication rec {
-  pname = "comfyui-testing";
-  version = "0.9.1-r1";  # Revision 1: Added all dependencies
-  format = "other";
-
-  src = fetchFromGitHub {
-    owner = "comfyanonymous";
-    repo = "ComfyUI";
-    rev = "v0.9.1";  # Use the actual upstream version
-    hash = "sha256-tAbXhLoN3tuML3R1AdJ18stleFv4w0nZcUoySP6W9+0=";
-  };
-
-  nativeBuildInputs = [ makeWrapper uv ];
 
   dontBuild = true;
   doCheck = false;
@@ -174,8 +176,8 @@ python3.pkgs.buildPythonApplication rec {
     # Copy all ComfyUI source files
     cp -r . $out/share/comfyui/
 
-    # Build Python environment with all dependencies
-    pythonEnv="${pythonEnv}"
+    # Build Python environment with all dependencies from propagatedBuildInputs
+    pythonEnv="${python3.withPackages (ps: propagatedBuildInputs)}"
 
     # Create wrapper script with proper PYTHONPATH and uv in PATH
     makeWrapper $pythonEnv/bin/python3 $out/bin/comfyui \
