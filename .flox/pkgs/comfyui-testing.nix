@@ -171,9 +171,14 @@ python3.pkgs.buildPythonApplication rec {
     # Copy all ComfyUI source files
     cp -r . $out/share/comfyui/
 
-    # Create wrapper script
-    makeWrapper ${pythonEnv}/bin/python3 $out/bin/comfyui \
-      --add-flags "$out/share/comfyui/main.py"
+    # Build Python environment with all dependencies
+    pythonEnv="${pythonEnv}"
+
+    # Create wrapper script with proper PYTHONPATH
+    makeWrapper $pythonEnv/bin/python3 $out/bin/comfyui \
+      --add-flags "$out/share/comfyui/main.py" \
+      --suffix PYTHONPATH : "$out/share/comfyui" \
+      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}"
 
     runHook postInstall
   '';
