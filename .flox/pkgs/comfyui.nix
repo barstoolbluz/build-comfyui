@@ -176,6 +176,9 @@ python3.pkgs.buildPythonApplication rec {
     # Build Python environment with all dependencies
     pythonEnv="${python3.withPackages (ps: propagatedBuildInputs)}"
 
+    # Use raw CPython for venv creation, not the wrapped version
+    rawPython="${python3}/bin/python3"
+
     # Install enhanced model download tools (as library scripts)
     cp ${../../assets/download-sd15-enhanced.py} $out/share/comfyui-tools/download-sd15.py
     cp ${../../assets/download-sdxl-enhanced.py} $out/share/comfyui-tools/download-sdxl.py
@@ -206,7 +209,7 @@ set -euo pipefail
 
 WORK_DIR="\''${COMFYUI_WORK_DIR:-\''${HOME}/comfyui-work}"
 VENV_DIR="\''${WORK_DIR}/.venv"
-BASE_PY="$pythonEnv/bin/python3"
+BASE_PY="$rawPython"
 
 # ComfyUI v0.9.x stores state (including a sqlite DB) under a `user/` directory.
 # When ComfyUI is launched from /nix/store, its default paths can resolve into a
