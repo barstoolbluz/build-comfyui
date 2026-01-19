@@ -268,8 +268,7 @@ if [ "\''${have_base}" -eq 0 ]; then
 extra_args+=(--base-directory "\''${WORK_DIR}")
 fi
 
-# Run Python in isolated mode so it ignores any remaining PYTHON* env vars.
-exec "\''${VENV_DIR}/bin/python" -I "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
+exec "\''${VENV_DIR}/bin/python" "$out/share/comfyui/main.py" "\''${extra_args[@]}" "\''$@"
 EOF
     chmod +x $out/bin/comfyui
 
