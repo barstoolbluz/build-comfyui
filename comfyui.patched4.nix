@@ -12,7 +12,7 @@ let
     };
   };
 
-  inherit (nixpkgs_pinned) lib python3 fetchFromGitHub makeWrapper uv;
+  inherit (nixpkgs_pinned) lib python3 fetchFromGitHub makeWrapper uv bash;
 
   # Import ComfyUI dependencies using the same pinned nixpkgs
   # Need to resolve dependencies between packages
@@ -36,6 +36,16 @@ let
   gguf = nixpkgs_pinned.callPackage ./gguf.nix {};
   accelerate = nixpkgs_pinned.callPackage ./accelerate.nix {};
   comfy-kitchen = nixpkgs_pinned.callPackage ./comfy-kitchen.nix {};
+
+  # Override av to 14.2+ for API nodes support (pinned nixpkgs has 14.1.0)
+  av = nixpkgs_pinned.python3Packages.av.overrideAttrs (oldAttrs: rec {
+    version = "14.2.0";
+    src = nixpkgs_pinned.fetchPypi {
+      pname = "av";
+      inherit version;
+      hash = "sha256-EytdUsomK5ewNW6PSMu+VNCsIyEHpyKrjMjAwZ6voXs=";
+    };
+  });
 in
 
 python3.pkgs.buildPythonApplication rec {
@@ -70,6 +80,7 @@ python3.pkgs.buildPythonApplication rec {
     gguf              # GGUF quantized model support (critical for FLUX) - custom override for Darwin
     accelerate        # Model loading optimization - custom override for Darwin
     comfy-kitchen     # FP8/FP4 support for optimized inference (v0.9.1+)
+    av                # Media library - overridden to 14.2.0 for API nodes support
   ] ++ (with python3.pkgs; [
     # PyTorch stack - Override with CUDA-optimized if needed
     torch
@@ -107,8 +118,7 @@ python3.pkgs.buildPythonApplication rec {
     alembic
     sqlalchemy
 
-    # Media
-    av
+    # Media - removed, using custom override below
 
     # Utilities
     tqdm
@@ -129,7 +139,7 @@ python3.pkgs.buildPythonApplication rec {
     dill              # Serialization for Impact Subpack
 
     # Workflow support dependencies
-    opencv-python     # ControlNet preprocessors (Canny, HED, etc.)
+    opencv4           # ControlNet preprocessors (Canny, HED, etc.) - using opencv4 to avoid conflicts
 
     # Additional dependencies for workflow optimization
     timm              # PyTorch Image Models (for controlnet-aux)
@@ -180,13 +190,98 @@ python3.pkgs.buildPythonApplication rec {
     cp ${../../assets/comfyui-download-enhanced} $out/bin/comfyui-download
     chmod +x $out/bin/comfyui-download
 
-    # Create wrapper script for comfyui
-    # Use --suffix so environment packages can override bundled versions
-    makeWrapper ${python3}/bin/python3 $out/bin/comfyui \
-      --add-flags "$out/share/comfyui/main.py" \
-      --suffix PYTHONPATH : "$out/share/comfyui" \
-      --suffix PYTHONPATH : "$pythonEnv/${python3.sitePackages}" \
-      --prefix PATH : "${uv}/bin"
+    # Create launch script for ComfyUI.
+    #
+    # ComfyUI-Manager installs Python deps at runtime via `uv pip install`. In a Nix/Flox setup,
+    # writing into the Nix store is not possible, and `uv ... --system` forces installs into the
+    # system Python. We provide a per-user virtualenv (with system-site-packages) and run ComfyUI
+    # from that interpreter, so runtime installs land in a writable location.
+
+cat > $out/bin/comfyui << EOF
+#!${bash}/bin/bash
+set -euo pipefail
+
+WORK_DIR="\${COMFYUI_WORK_DIR:-\$HOME/comfyui-work}"
+VENV_DIR="\${WORK_DIR}/.venv"
+BASE_PY="${pythonEnv}/bin/python3"
+
+# ComfyUI v0.9.x stores state (including a sqlite DB) under a `user/` directory.
+# When ComfyUI is launched from /nix/store, its default paths can resolve into a
+# read-only location, which makes DB init fail and leaves `Session` as None.
+# (In ComfyUI's db.py, Session is only set inside init_db(), and create_session()
+# simply calls Session().)
+
+mkdir -p "\${WORK_DIR}/user"
+
+if [ ! -x "\${VENV_DIR}/bin/python" ]; then
+mkdir -p "\${WORK_DIR}"
+"\${BASE_PY}" -m venv --system-site-packages "\${VENV_DIR}"
+fi
+
+# Make Nix-provided Python packages visible to the venv interpreter without relying
+# on PYTHONPATH. This writes a .pth file in the venv site-packages.
+PTH_DIR="\${VENV_DIR}/lib/python${python3.pythonVersion}/site-packages"
+mkdir -p "\${PTH_DIR}"
+cat > "\${PTH_DIR}/nix-site-packages.pth" <<'PTH'
+${pythonEnv}/${python3.sitePackages}
+$out/share/comfyui
+PTH
+
+export VIRTUAL_ENV="\${VENV_DIR}"
+export PATH="\${VENV_DIR}/bin:$out/bin:${uv}/bin:\${PATH}"
+
+	# Flox (and other launchers) may inject PYTHON* variables. Those can cause Python
+	# to compute stdlib paths incorrectly (for example, breaking `import sqlite3`),
+	# which then makes ComfyUI's DB init fail and leaves `Session` as None.
+	unset PYTHONHOME 2>/dev/null || true
+	unset PYTHONPATH 2>/dev/null || true
+
+# Use a writable working directory so relative paths resolve under WORK_DIR.
+cd "\${WORK_DIR}"
+
+# If the caller did not specify database/user directories, default them into WORK_DIR.
+have_db=0
+have_userdir=0
+for a in "\$@"; do
+case "\$a" in
+--database-url|--database_url) have_db=1 ;;
+--user-directory|--user_directory) have_userdir=1 ;;
+esac
+done
+
+extra_args=()
+if [ "\${have_db}" -eq 0 ]; then
+extra_args+=(--database-url "sqlite:////\${WORK_DIR}/user/comfyui.db")
+fi
+if [ "\${have_userdir}" -eq 0 ]; then
+extra_args+=(--user-directory "\${WORK_DIR}/user")
+fi
+
+	# Run Python in isolated mode so it ignores any remaining PYTHON* env vars.
+	exec "\${VENV_DIR}/bin/python" -I "$out/share/comfyui/main.py" "\${extra_args[@]}" "\$@"
+EOF
+chmod +x $out/bin/comfyui
+
+# Provide a uv shim that strips `--system` so ComfyUI-Manager installs into the venv.
+cat > $out/bin/uv << EOF
+#!${bash}/bin/bash
+set -euo pipefail
+real_uv="${uv}/bin/uv"
+
+if [ "\${1:-}" = "pip" ] && [ -n "\${VIRTUAL_ENV:-}" ]; then
+args=()
+for a in "\$@"; do
+if [ "\$a" = "--system" ]; then
+continue
+fi
+args+=("\$a")
+done
+exec "\$real_uv" "\${args[@]}"
+fi
+
+exec "\$real_uv" "\$@"
+EOF
+chmod +x $out/bin/uv
 
     runHook postInstall
   '';
