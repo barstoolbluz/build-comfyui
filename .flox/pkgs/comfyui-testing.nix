@@ -38,11 +38,69 @@ let
     dontBuild = true;
   };
 
+  # Build workflow-templates
+  comfyui-workflow-templates = python3.pkgs.buildPythonPackage rec {
+    pname = "comfyui-workflow-templates";
+    version = "0.7.63";
+    format = "wheel";
+    src = fetchPypi {
+      pname = "comfyui_workflow_templates";
+      inherit version;
+      format = "wheel";
+      dist = "py3";
+      python = "py3";
+      hash = "sha256-yVUeZ3nNJZwKslkhI8fURm15MTYIBFevWaHVr5VPN8o=";
+    };
+    propagatedBuildInputs = [ ];
+    doCheck = false;
+    dontBuild = true;
+  };
+
+  # Build embedded-docs
+  comfyui-embedded-docs = python3.pkgs.buildPythonPackage rec {
+    pname = "comfyui-embedded-docs";
+    version = "0.3.1";
+    format = "wheel";
+    src = fetchPypi {
+      pname = "comfyui_embedded_docs";
+      inherit version;
+      format = "wheel";
+      dist = "py3";
+      python = "py3";
+      hash = "sha256-+7sO+Z6r2Hh8Zl7+I1ZlsztivV+bxNlA6yBV02g0yRw=";
+    };
+    propagatedBuildInputs = [ ];
+    doCheck = false;
+    dontBuild = true;
+  };
+
+  # Build spandrel
+  spandrel = python3.pkgs.buildPythonPackage rec {
+    pname = "spandrel";
+    version = "0.4.0";
+    pyproject = true;
+    src = fetchFromGitHub {
+      owner = "chaiNNer-org";
+      repo = "spandrel";
+      rev = "v${version}";
+      hash = "sha256-BiC4gmRsNkRAUonKHV7U/hvOP00pIPtm40ydmSlNDCI=";
+    };
+    build-system = with python3.pkgs; [ setuptools ];
+    propagatedBuildInputs = with python3.pkgs; [
+      torch torchvision numpy einops pillow safetensors
+    ];
+    doCheck = false;
+  };
+
   # Build a Python environment with all required packages
   pythonEnv = python3.withPackages (ps: with ps; [
     # ComfyUI-specific packages
     comfyui-frontend-package
     comfy-kitchen
+    comfyui-workflow-templates
+    comfyui-embedded-docs
+    spandrel
+    kornia  # For Canny edge detection and morphology
     # Core ML/AI
     torch
     torchvision
